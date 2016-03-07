@@ -1,0 +1,51 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\title{Internal Geometry of Photodiode Housing}
+\author{Dawson Beatty}
+\begin{document}
+	\maketitle
+	\section*{Definitions}
+	The two yellow boxes are the locations of the photodiodes. This diagram is \textit{not} to scale, and should be used for reference only.  The large box around the outside is the whole diode housing, with the front aperture open on the left. 
+	\begin{description}
+		\item[height] is half the length of the viewing aperture.
+		\item[base] is the distance between the front of the whole housing, and the line projected between the diodes.
+		\item[d1 / d2] The black diagonal line across the center of the diagram shows the maximum angle at which the lower diode can receive light.  We split up the base into two chunks-- $d1$ and $d2$ to form two triangles on the interior of the housing, both with the central black line as the hypotenuse.
+		\item[.25 in] was the width of the front face of the diode housing as of 3/5/16, update as needed.
+		\item[1.00 in] is the distance between the diodes. 
+		\item[Theta $(\theta)$] is the angle between the central black line, and the projection between the two diodes. 
+		\item[90 - Theta] is the angle in the center of the diagram, which is 90 - $\theta$, assuming degrees. 
+		\item[.39 in] Is the distance between the diodes and the front of the photodiode hub. (Seperate Piece)  
+	\end{description}
+	\section*{Determining Distances and Angles}
+	There are two main equations that we want to use for this: 
+	\begin{align*}
+	& d1 = base - .5\tan(\theta) & height = d1 \tan(90 - \theta)
+	\end{align*}
+	You can do some basic trigonometry to find the above equations yourself if necessary. 
+	
+	There are four unknowns here-- $\theta, base, d1, \text{and } height$. We have two equations, so we can solve for at most two of the unknowns.  
+	
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{"C:/Users/dabe5458/Desktop/Photodiode Schematic"}
+\label{fig:PhotodiodeSchematic}
+\end{figure}
+
+\section*{Changelog}
+\begin{itemize}
+	\item[3/5/16] Wanted an aperture of $70^{\circ}$, already had a base length of $2.351$ in. $\theta = 55$.  Solved for the height, didn't leave enough room for the razors on the outside edge.  
+	
+	Total height of the housing is $2.42$ in, want to leave $\frac{3}{4}$ in on all sides to have room for the razors. $\frac{2.42 - 2*.75}{2} = height = .46$  Now we can use that height, and use the $\theta = 55$ from earlier to find all the other measurements. 
+	
+	\begin{align*}
+	& height = d1 \tan ( 90 - \theta) \Rightarrow .46 = d1 \tan(35), \: d1 = .657 \\ 
+	& d1 = base - .5(tan(\theta)) \Rightarrow .657 + .5 \tan(55) = base, \: base = 1.37
+	\end{align*} 
+	
+	Subtracted $.39$ from $1.37$ to get the distance from the very front of the housing to the notch holding the photodiode hub, changed that in the solidworks file.  
+\end{itemize}
+\end{document}
