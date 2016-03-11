@@ -9,7 +9,7 @@
 \begin{document}
 	\maketitle
 	\section*{Rotations}
-	One of the main applications of linear algebra within Aerospace engineering is the use of rotation matrices.  Rotation matrices can be used to describe the roll, pitch, and yaw of a spacecraft, which represent rotation about the $x$, $y$, and $z$ axes respectively. \\
+	One of the main applications of linear algebra within Aerospace engineering is the use of rotation matrices.  Rotation matrices can be used to describe the roll, pitch, and yaw of a spacecraft, which represent rotation about the $x$, $y$, and $z$ axes respectively. This from Glenn Murray's \textit{Rotation About an Arbitrary Axis in 3 Dimensions}, \cite{Rotations}\\
 	
 	\textbf{Roll:}
 	$$
@@ -39,14 +39,21 @@
 	\sum F_x = 0 \qquad \sum F_y = 0 \qquad \tau_{\text{net}} = 0
 	$$ 
 	
-	This usually involves identifying all the forces in the problem, and summing them up to zero.  This is at it's heart a giant homogeneous linear algebra problem. It would also be \textit{really} interesting to see if the solution to an engineering problem you found was guaranteed to be unique, or if there might be another solution that you're missing. 
+	These formulas provided by Professor Wolfson in his \textit{Essential university physics} \cite{Statics}.  This usually involves identifying all the forces in the problem, and summing them up to zero.  This is at it's heart a giant homogeneous linear algebra problem. It would also be \textit{really} interesting to see if the solution to an engineering problem you found was guaranteed to be unique, or if there might be another solution that you're missing. 
 	
 	\section*{Component Connections}
 	
 	Again this is not strictly an Aerospace engineering application, but more of an engineering application in general. When working with a large system, it's helpful to know which parts connect ot each other, and the distances between each of the components. 
 	
-	Problems like this can be solved by creating a matrix with one row and one column for each component, then putting a $1$ for connections between components, and a $0$ for components that don't connect.  I was somewhat disheartened to see that we'd be skipping most of the sections dealing with problems like this, but I can always go back and learn it more on my own. 
+	Problems like this can be solved by creating a matrix with one row and one column for each component, then putting a $1$ for connections between components, and a $0$ for components that don't connect. \cite{Graph}
+
 	
-	\section*{Curve Mapping}
-	It's also possible to use linear algebra for polynomial curve fitting, or fitting a curve to a specific set of points.  There are limitless applications of this in every part of engineering. 
+	\begin{thebibliography}{9}
+		\bibitem{Rotations}
+		Murray, G. (2013, June 6). \textit{Rotation About an Arbitrary Axis in 3 Dimensions}. Retrieved March 10, 2016, from http://inside.mines.edu/fshome/gmurray/ArbitraryAxisRotation/
+		\bibitem{Statics}
+		Wolfson, R. (2012). Essential university physics. Boston: Addison-Wesley.
+		\bibitem{Graph}
+		Trudeau, R. J. (1993). Introduction to graph theory. New York: Dover Pub.
+	\end{thebibliography}
 \end{document}
