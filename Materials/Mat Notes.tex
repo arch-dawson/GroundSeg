@@ -108,8 +108,8 @@
 	\begin{enumerate}
 		\item Less than about 15\% difference in atomic radii.
 		\item The same crystal structure
-		\item Similar electronegativities 
-		\item The same valence
+		\item Similar electronegativities (within 15\%)
+		\item The same valence ($2^+, 3^-$, etc.)
 	\end{enumerate}
 	$$
 	\% \text{Difference} = \frac{R - r}{R} \times 100
@@ -303,7 +303,7 @@
 	\subsubsection*{Concentration Gradient}
 	See Fick's $1^{\text{st}}$ law.
 	$$
-	\frac{\delta c}{\delta x} = \frac{Delta c}{\Delta x} = \frac{c_h - c_l}{0-x_0} = -\frac{c_h-c_l}{x_0}
+	\frac{\delta c}{\delta x} = \frac{\Delta c}{\Delta x} = \frac{c_h - c_l}{0-x_0} = -\frac{c_h-c_l}{x_0}
 	$$
 	\subsection{Alternate Diffusion Paths}
 	Up until now just considered volume diffusion, but diffusion can be much easier along a grain boundary.   Surface diffusion is even easier. 
@@ -381,7 +381,7 @@
 	\end{description}
 	
 	\begin{description}
-		\item[Ductility] is quantified as the percent elongation at failure: $100 \times \epsilon_{\text{failure}}$. Opposite of ductile is brittle. 
+		\item[Ductility] is quantified as the percent elongation at failure: $100 \times \epsilon_{\text{failure}}$. Opposite of ductile is brittle. $(\epsilon_\text{failure} - \epsilon_{\text{recovery}}) \times 100$
 		\item[Toughness] is the combination of strength and ductility. 
 		\item[Upper Yield Point] is the transition from elastic region, followed by a non-homogeneous deformation that begins at a point of stress concentration. (Often where the specimen is gripped)
 		\item[Lower Yield Point] is the end of the ripple pattern, beginning of general plastic deformation. 
@@ -533,6 +533,11 @@ $$
 	\frac{1}{\tau} = Ce^{\frac{-Q}{RT}}
 	$$
 	
+	\textbf{Simplified Form}
+	$$
+	\ln \bigg( \frac{K_1}{K_2} \bigg) = \frac{Q}{R} \bigg[ \frac{1}{T_2} - \frac{1}{T_1} \bigg]
+	$$
+	
 	\subsection{Viscoelastic Deformation}
 	Viscous behavior of glasses can be defined by the ``viscosity", $\eta$. 
 	
@@ -542,8 +547,18 @@ $$
 	
 	\subsubsection*{Inorganic Glasses}
 	$$
-	\eta = \eta_0 e^{Q}{RT}
+	\eta = \eta_0 e^\frac{Q}{RT}
 	$$
+	
+	\begin{tabular}{|c|c|}
+		\hline Region & $\eta$ Values \\ 
+		\hline Melting Range & 50-500 \\ 
+		\hline Working Range & $10^4 - 10^8$ \\ 
+		\hline Softening Point & $10^{7.6}$ \\ 
+		\hline Annealing Range & $10^{12.5}-10^{13.5}$ \\ 
+		\hline Annealing Point & $10^{13.4}$ \\ 
+		\hline 
+	\end{tabular} 
 	
 	\subsubsection*{Organic Polymers}
 	Modulus of Elasticity is usually plotted instead of viscosity for organic polymers. 

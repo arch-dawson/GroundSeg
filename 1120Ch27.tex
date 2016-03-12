@@ -1,0 +1,56 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\title{PHYS-1120 Chapter 27 \\ Faraday's Law}
+\author{Dawson Beatty}
+\begin{document}
+	\maketitle
+	Faraday showed that there's another way to make a magnetic field: A \textit{changing} electric field makes a magnetic field.
+	
+	\subsection*{EMF $\varepsilon$}
+	Defined as a voltage difference, $\Delta V = Ed$.  Think of it as a battery voltage. 
+	
+	$$
+	\boxed{\varepsilon = \oint_{\mathcal{L}} \vec{E} \cdot \text{d} \vec{\mathit{l}}}
+	$$
+	
+	\subsection*{Magnetic Flux $\Phi_\text{B}$}
+	
+	$$
+	\Phi_\text{B} = \int_\text{S} \vec{B} \cdot \text{d}\vec{A} = \vec{B} \cdot \vec{A} = BA \cos \theta
+	$$
+	
+	The right two terms above are \textit{only} true if $B$ is constant, and $A$ is flat. 
+	
+	Units: $[\Phi] = I\cdot m^2 = $ weber (Wb)
+	
+	\subsection{Faraday's Law}
+	An induced emf $(\varepsilon)$ is created by changing magnetic flux
+	
+	$$
+	\boxed{\varepsilon_\text{N loops} = - N\frac{\text{d} \Phi_\text{M}}{\text{dt}}}
+	$$
+	
+	B = constant $\Rightarrow \varepsilon = 0$
+	B is changing with time $\Rightarrow |\varepsilon| = \left|\frac{\text{d}\Phi}{\text{dt}}\right|$
+	
+	\subsubsection*{Changing the Magnetic Flux}
+	\begin{itemize}
+		\item Change $B$ (increase or decrease magnitude of B-field)
+		\item Change $A$ (altering the shape of the loop)
+		\item Change the angle $\theta$ between $B$ and the vector $A$, (by rotating the loop)
+	\end{itemize}
+	
+	\subsection*{Lenz's Law}
+	States that the induced emf induces a current that flows in the direction which creates an induced B-field that \textit{opposed the change} in flux. Lenz's law doesn't like change, wants to keep the status quo. 
+	
+	\subsection*{Eddy Currents}
+	If a piece of metal and a B-field are in relative motion such that $\Phi$ changes through some loop within the metal, the changing $\Phi$ creates an emf which drives a current $I$. This is called an \textit{Eddy current}.  This current and the B-field will always cause a magnetic force to slow the motion of the metal. 
+	$$\vec{F} = I\vec{L} \times \vec{B}$$
+	
+	
+	
+\end{document}

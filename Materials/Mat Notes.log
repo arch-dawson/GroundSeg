@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.28)  7 MAR 2016 15:22
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.28)  11 MAR 2016 17:36
 entering extended mode
 **Mat*Notes.tex
 ("C:\Users\dabe5458\Desktop\Homework\trunk\Materials\Mat Notes.tex"
@@ -644,7 +644,7 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 136.
  [4] [5] [6]
-[7] [8] [9] [10] [11] [12] [13]
+[7] [8] [9] [10] [11] [12] [13] [14]
 ("C:\Users\dabe5458\Desktop\Homework\trunk\Materials\Mat Notes.aux") ) 
 Here is how much of TeX's memory you used:
  21406 strings out of 493921
@@ -678,9 +678,9 @@ s/cm/cmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/c
 m/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
 mti10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/symbol
 s/msbm10.pfb>
-Output written on "Mat Notes.pdf" (13 pages, 305082 bytes).
+Output written on "Mat Notes.pdf" (14 pages, 306990 bytes).
 PDF statistics:
- 140 PDF objects out of 1000 (max. 8388607)
+ 143 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
