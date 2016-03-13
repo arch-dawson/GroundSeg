@@ -563,4 +563,45 @@ $$
 	\subsubsection*{Organic Polymers}
 	Modulus of Elasticity is usually plotted instead of viscosity for organic polymers. 
 	
+	\section{Thermal Behavior}
+	\subsection{Heat Capacity} 
+	Heat Capacity, $C$ is defined as the amount of heat required to raise the material's temperature by $1^{\circ}$ K. 
+	$$
+	C = \frac{Q}{\Delta T}
+	$$
+	
+	With $Q$ being the amount of heat necessary to produce temperature change $\Delta T$.
+	
+	Common alternative is the specific heat, which uses a basis of unit mass: 
+	$$
+	c= \frac{q}{m \Delta T}
+	$$ 
+	There are two ways to measure heat capacity-- holding constant volume $C_v$ or constant pressure $C_p$. $C_p$ is always greater than $C_v$, but the difference is minor for most solids at room temperature or below.  
+	
+	Interestingly, $C_v$ rises very sharply from 0 K as $C_v = AT^3$.  Above a Debye temperature $\theta_D$ the value of $C_v$ levels off at approximately 3 $R$, where $R$ is the universal gas constant. $\theta_D$ is often less than room temperature, and for many solids $C_v \approx C_p$, so we have a good rule of thumb. 
+	\subsection{Thermal Expansion}
+	
+	Increase of temperature leads to greater vibrations in the atoms, which causes the material to expand. The overall dimension of a material in a given direction, $L$, will increase with the temperature $T$.  This is reflected by the linear coefficient of thermal expansion, $\alpha$. 
+	$$
+	\alpha = \frac{\text{d}L}{L \text{d} T}
+	$$
+	
+	It it worth noting that $[\alpha] = \frac{mm}{mm \cdot ^{\circ} C}$
+	\subsection{Thermal Conductivity}
+	We can define thermal conductivity, $k$, by Fourier's Law: 
+	$$
+	k = - \cfrac{\cfrac{dQ}{dt}}{A\cfrac{dT}{dx}}
+	$$
+	Where $\frac{dQ}{dt}$ is the rate of heat transfer across an area $A$, due to a temperature gradient $\frac{dT}{dx}$. $[k] = \frac{J}{s \cdot m \cdot K}$. 
+	
+	For steady state heat conduction through a flat slab, we can simplify the above by replacing the differentials with a change $\Delta$.  
+	
+	\subsection{Thermal Shock}
+	Thermal shock is defined as the fracture of a material after a sudden change in temperature (usually rapid cooling). 
+	$$
+	\epsilon = \alpha \Delta T
+	$$
+	
+Then apply $\sigma = E\epsilon$
+	
 \end{document}
