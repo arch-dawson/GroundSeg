@@ -418,13 +418,265 @@ x \\ y
 		-4 \\ 3 \\ 1
 		\end{bmatrix} \right\rbrace}
 		$$
-	\subsubsection*{(c)}
-	\subsubsection*{(d)}
+	\subsubsection*{(c)} \textbf{Range of the matrix $A = \begin{bmatrix}
+		1 & 2 & -1 & 3 \\ -2 & 0 & 2 & 1 \\ 1 & 2 & 1 & 4
+		\end{bmatrix}$}
+		First we need to actually \textit{find} the range.
+		\begin{align*}
+		& A = \begin{bmatrix}
+		1 & 2 & -1 & 3 \\ -2 & 0 & 2 & 1 \\ 1 & 2 & 1 & 4
+		\end{bmatrix} \begin{array}{c}
+		\\ + 2 R_1 \\ + R_1
+		\end{array} = \begin{bmatrix}
+		1 & 2 & -1 & 3 \\ 0 & 4 & 0 & 7 \\ 0 & 4 & 0 & 7
+		\end{bmatrix} \begin{array}{c}
+		\\ \\ -R_2
+		\end{array} \\ 
+		& = \begin{bmatrix}
+		1 & 2 & -1 & 3 \\ 0 & 4 & 0 & 7 \\ 0 & 0 & 0 & 0
+		\end{bmatrix}
+		\end{align*}
+		Now we know that the columns where a pivot point appears in the reduced form (the first 2) can be taken from the original matrix and be used as the range of the matrix. 
+		
+		We need something orthogonal to both of those, so we'll use the cross product again because we don't like change. 
+		$$
+		\begin{bmatrix}
+		1 \\-2 \\ -1
+		\end{bmatrix} \times \begin{bmatrix}
+		2 \\ 0 \\ 2
+		\end{bmatrix} = \begin{bmatrix}
+		-4 \\ -4 \\ 4
+		\end{bmatrix}
+		$$
+		
+		So the basis is $\boxed{\text{span} \left\lbrace \begin{bmatrix}
+			-1 \\ -1 \\ 1
+			\end{bmatrix} \right\rbrace }$
+	\subsubsection*{(d)} \textbf{The cokernel of $A$ from the previous part}
+	\begin{align*}
+	& A^T = \begin{bmatrix}
+	1 & -2 & 1\\ 2 & 0 & 2\\ -1 & 2 & 1\\ 3 & 1 & 4 
+	\end{bmatrix} \begin{array}{c}
+	 \\ -2 R_1 \\ +R_1 \\ -3R_1
+	\end{array} = \begin{bmatrix}
+	1 & -2 & 1\\ 0 & 4 & 0\\ 0 & 0 & 2\\ 0 & 7 & 1 
+	\end{bmatrix} \begin{array}{c}
+	\\ \\ \\ -\frac{7}{4} R_2
+	\end{array} = \begin{bmatrix}
+	1 & -2 & 1\\ 0 & 4 & 0\\ 0 & 0 & 2\\ 0 & 0 & 1 
+	\end{bmatrix}  \begin{array}{c}
+	\\ \\ \\ -\frac{1}{2}R_3
+	\end{array} \\ 
+	& = \begin{bmatrix}
+	1 & -2 & 1\\ 0 & 4 & 0\\ 0 & 0 & 2\\ 0 & 0 & 0 
+	\end{bmatrix} \begin{bmatrix}
+	a \\ b \\ c
+	\end{bmatrix} = \begin{bmatrix}
+	0 \\ 0 \\ 0 \\ 0
+	\end{bmatrix} \begin{array}{c}
+	a -2b + c = 0 \\ 4b = 0 \\ c = 0
+	\end{array}
+	\end{align*} 
+	Obviously $a, b$ and $c$ are all 0, so the only element in the cokernel of $A$ is the zero vector. All vectors are orthogonal to the zero vector, so in a sense all of $\R^3$ is orthogonal to the cokernel. We can use the trivial basis $\hat{i}, \hat{j}, \hat{k}$. 
+	
 	\subsection*{8}
-	\subsection*{15}
-	\subsection*{17}
-	\subsubsection*{(c)}
-	\subsection*{22}
-	\subsubsection*{(a)}
+	\begin{proof}
+		\textbf{Seek to prove that the orthogonal complement $W^\perp$ to a subspace is itself a subspace.}
+		
+		We're working with a subspace of an existing, valid subspace, so we only need to demonstrate that our subspace is closed under addition, scalar multiplication, and contains the zero vector. 
+		
+		Showing that the subspace contains the zero vector is trivial, since by definition $W \cap W^\perp = \{0\}$
+		
+		Also, for any $u,v \: \epsilon W^\perp$ which satisfy $\langle u, w\rangle = 0, \langle v, w\rangle = 0 $ for any $w \: \epsilon W$, $\langle c_1u + c_2v,w \rangle = c_1 \langle u,w \rangle + c_2 \langle v,w \rangle $, which shows that $c_1u + c_2v \: \epsilon \: W^\perp$.  This demonstrates that the subspace is closed under both addition and scalar multiplication. 
+	\end{proof}
+	\subsection*{15} Let $W \subset V$ with $\dim V = n$.  Suppose $w_1, \cdots, w_m$ is an orthogonal basis for $W$, and $w_{m+1},\cdots,w_n$ is an orthogonal basis for $W^\perp$.
+	\subsubsection*{(a)} \begin{proof}
+		\textbf{Seek to prove that $w_1,\cdots,w_n$ forms an orthogonal basis for $V$.}
+		
+		We know that both $W$ and $W^\perp$ are composed of vectors that are all orthogonal to each other, since they form an orthogonal basis for each of their respective subspaces. We also know that every element in $W^\perp$ is orthogonal to all vectors in $W$, by definition. The converse, (All $W$ are orthogonal to all $W^\perp$) must be true by \textit{Proposition 5.53}, $(W^\perp)^\perp = W.$
+		
+		Therefore we have exactly $n$ vectors all orthogonal to each other, which \textit{must} form a bbasis for $V$, since $\dim V = n$. 
+	\end{proof}
+	\subsubsection*{(b)} \textbf{Show that if $v = c_1w_1 + \cdots + c_nw_n$ is any vector in $V$, then its orthogonal decomposition is equal to $v = w+z$, where $w = c_1w_1 + \cdots + c_mw_m \: \epsilon \: W$, and $z = c_{m+1}w_{m+1}+\cdots + c_nw_n \: \epsilon \: W^\perp$}
+	
+	The possible values for $w$ span all of $W$, and the options for $z$ span all of $W^\perp$. \textit{Proposition 5.49} states that every vector $v$ can be uniquely decomposed into $v = w + z$, $w \: \epsilon \: W$, $z \: \epsilon \: W^\perp$, which obviously shows what we seek to demonstrate. 
+	 
+	\subsection*{17} \textbf{For the following matrix, $(i)$ find a basis for the 4 fundamental subspaces, $(ii)$ verify that the range and cokernel are orthogonal complements, and $(iii)$ verify that the corange and kernel are orthogonal complements. }
+	\subsubsection*{(c)} \textbf{$A = \begin{bmatrix}
+		0 & 1 & 2 \\ -1 & 0 & -3 \\ -2 & 3 & 0
+		\end{bmatrix}$} 
+	\begin{align*}
+	& A = \begin{bmatrix}
+	0 & 1 & 2 \\ -1 & 0 & -3 \\ -2 & 3 & 0
+	\end{bmatrix} \begin{array}{c}
+	R_1 = R_2 \\ R_2 = R_1 \\ .
+	\end{array} = \begin{bmatrix}
+	-1 & 0 & -3 \\ 0 & 1 & 2 \\  -2 & 3 & 0
+	\end{bmatrix} \begin{array}{c}
+	\\ \\ -2R_1 
+	\end{array} = \begin{bmatrix}
+	-1 & 0 & -3 \\ 0 & 1 & 2 \\  0 & 3 & 6
+	\end{bmatrix} \begin{array}{c}
+	R_1 = (-1)R_1\\ \\ -3R_2
+	\end{array} \\ 
+	& = \begin{bmatrix}
+	-1 & 0 & -3 \\ 0 & 1 & 2 \\  0 & 0 & 0
+	\end{bmatrix}
+	\end{align*}
+	We found the reduced row echelon form of the matrix, with pivots in the first two columns.  We can use the first two columns of $A$ as the basis of the range of $A$. 
+	
+	$$
+	\boxed{\text{range}(A) = \text{span} \left\lbrace \begin{bmatrix}
+	0 \\ -1 \\ -2
+	\end{bmatrix}, \begin{bmatrix}
+	1 \\ 0 \\ 3
+	\end{bmatrix} \right\rbrace }
+	$$
+	
+	Now we can just find the kernel of $A$: 
+	$$
+	\begin{bmatrix}
+	-1 & 0 & -3 \\ 0 & 1 & 2 \\  0 & 0 & 0
+	\end{bmatrix} \begin{bmatrix}
+	a \\ b \\ c
+	\end{bmatrix} = \begin{bmatrix}
+	0 \\ 0 \\0 
+	\end{bmatrix}, \begin{array}{c} a + 3c = 0 \\ b+2c = 0
+	\end{array}
+	$$
+	
+	$$
+	\boxed{\ker(A) = \text{span} \left\lbrace \begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} \right\rbrace}
+	$$
+	
+	Finding the corange and cokernel are a bit easier now, especially since $A$ is skew-symmetric.  This means that $A$ and $A^T$ have the \textit{same} reduced row echelon form, and that we can just take the first two columns of $A^T$ to be the basis of the corange. 
+	
+	
+	$$
+	\boxed{\text{corange}(A) = \text{span} \left\lbrace \begin{bmatrix}
+		0 \\ 1 \\ 2
+	\end{bmatrix}, \begin{bmatrix}
+	-1 \\ 0 \\ -3
+	\end{bmatrix} \right\rbrace}
+	$$
+	
+	Since the reduced row echelon form is the same, the cokernel is the same as the kernel. 
+	
+	$$
+	\boxed{\text{coker} (A) = \ker(A) = \text{span} \left\lbrace \begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} \right\rbrace}
+	$$
+	
+	Now we verify that the range and cokernel are orthogonal complements. We'll just work with the bases chosen above instead of writing ``span'' all the time, but the method holds for all multiples of the vectors as well. 
+	
+	\begin{align*}
+	& \ker(A) = \begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} & \text{range}(A) = \begin{bmatrix}
+	0 \\ -1 \\ -2
+	\end{bmatrix}, \begin{bmatrix}
+	1 \\ 0 \\ 3
+	\end{bmatrix} \\
+	& \boxed{\begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} \cdot \begin{bmatrix}
+	0 \\ -1 \\ -2
+	\end{bmatrix} = 0} & \boxed{\begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} \cdot \begin{bmatrix}
+	1 \\ 0 \\ 3
+	\end{bmatrix} = 0}
+	\end{align*}
+	
+	So indeed, the range and cokernel are orthogonal complements. 
+	
+	We also need to show that the corange and the kernel are orthogonal complements. 
+	
+	\begin{align*}
+	& \text{co}\ker(A) = \begin{bmatrix}
+	3 \\ 2 \\ -1
+	\end{bmatrix} & \text{corange}(A) = \begin{bmatrix}
+	0 \\ 1 \\ 2
+	\end{bmatrix}, \begin{bmatrix}
+	-1 \\ 0 \\ -3
+	\end{bmatrix} \\
+	& \boxed{\begin{bmatrix}
+		3 \\ 2 \\ -1
+		\end{bmatrix} \cdot \begin{bmatrix}
+		0 \\ 1 \\ 2
+		\end{bmatrix} = 0} & \boxed{\begin{bmatrix}
+		3 \\ 2 \\ -1
+		\end{bmatrix} \cdot \begin{bmatrix}
+		-1 \\ 0 \\ -3
+		\end{bmatrix} = 0}
+	\end{align*}
+	
+	Which confirms that the corange and kernel are orthogonal complements. 
+		
+	\subsection*{22} \textbf{For each of the following linear systems, verify compatibility using ther Fredholm alternative, find the general solution, and find the solution of minimum Euclidean norm}
+	\subsubsection*{(a)} 
+	$$
+	\begin{array}{c}
+	2x - 4y = -6 \\ -x + 2y = 3
+	\end{array}
+	$$
+	Or 
+	$$
+	\begin{bmatrix}
+	2 & -4 \\ -1 & 2
+	\end{bmatrix} \begin{bmatrix}
+	x \\ y
+	\end{bmatrix} = \begin{bmatrix}
+	-6 \\ 3
+	\end{bmatrix}
+	$$
+	We know that the system has a solution only if $b$ is orthogonal to the corkernel of $A$. 
+	
+	The cokernel of $A$ is the span of $\begin{bmatrix}
+	1 \\ 2
+	\end{bmatrix}$, and $\begin{bmatrix}
+	1 \\ 2 
+	\end{bmatrix} \cdot \begin{bmatrix}
+	\-6 \\ 3
+	\end{bmatrix} = 0$, \textbf{so the system has a solution! }
+	
+	$$
+	\begin{bmatrix}
+	2 & -4 \\ -1 & 2
+	\end{bmatrix} \begin{array}{c}
+	\\ +\frac{R_1}{2}
+	\end{array} = \begin{bmatrix}
+	2 & -4 \\ 0 & 0 
+	\end{bmatrix} \begin{bmatrix}
+	x \\ y
+	\end{bmatrix} = \begin{bmatrix}
+	-6 \\ 3
+	\end{bmatrix}, \begin{array}{c}
+	2x - 4y = -6
+	\end{array}
+	$$
+	
+	And so the system has an infinite number of solutions, \textbf{with the general solution} $x = 2y -3$, with $y$ being a free variable. 
+	
+	Now we need to find the minimum Euclidean norm, or the minimum of $\sqrt{x^2 + y^2}$. This is just a calculus problem. 
+	$$
+	\sqrt{x^2 + y^2} = \sqrt{(2y -3 )^2 + y^2} = \sqrt{5y^2 -12y + 9}
+	$$
+	Take the derivate, set it equal to 0
+	$$
+	\frac{10y - 12}{\sqrt{5y^2 -12y + 9}} = 0 \Rightarrow 10y - 12 = 0, \: y = \frac{6}{5}
+	$$
+	
+	From this it's easy to see that $x = \frac{-3}{5}$. And so \textbf{the minimum is } $\boxed{(x,y) = (-\frac{3}{5}, \frac{6}{5})}$
 	\subsubsection*{(f)}
+	$$
+	A = \begin{bmatrix}
+	1 & -1 & 2 & 3 \\ 3 & -3 & 5 & 7 \\ -2 & 2 & 1 & 4
+	\end{bmatrix} \qquad b = \begin{bmatrix}
+	5 \\ 13 \\ 0
+	\end{bmatrix}
+	$$
 \end{document}
