@@ -640,7 +640,7 @@ x \\ y
 	\end{bmatrix}$, and $\begin{bmatrix}
 	1 \\ 2 
 	\end{bmatrix} \cdot \begin{bmatrix}
-	\-6 \\ 3
+	-6 \\ 3
 	\end{bmatrix} = 0$, \textbf{so the system has a solution! }
 	
 	$$
@@ -679,4 +679,35 @@ x \\ y
 	5 \\ 13 \\ 0
 	\end{bmatrix}
 	$$
+	
+	The cokernel of $A$ is $\begin{bmatrix}
+	-13 \\ 5 \\ 1
+	\end{bmatrix}$, and $\begin{bmatrix}
+	5 \\ 13 \\ 0 
+	\end{bmatrix} \cdot \begin{bmatrix}
+	-13 \\ 5 \\ 1
+	\end{bmatrix} = 0$, so \textbf{the system has a solution.}
+	
+	\begin{align*}
+		& A = \begin{bmatrix}
+		1 & -1 & 2 & 3 \\ 3 & -3 & 5 & 7 \\ -2 & 2 & 1 & 4
+		\end{bmatrix} \begin{array}{c}
+		\\ -3R_1 \\ +2R_1
+		\end{array} =  \begin{bmatrix}
+		1 & -1 & 2 & 3 \\ 0 & 0 & -1 & -2 \\ 0 & 0 & 3 & 10
+		\end{bmatrix} \begin{array}{c}
+		\\ \\ +3 R_2
+		\end{array} \\
+		&= \begin{bmatrix}
+		1 & -1 & 2 & 3 \\ 0 & 0 & -1 & -2 \\ 0 & 0 & 0 & 4
+		\end{bmatrix} \begin{array}{c}
+		a - b + 2c + 3d = 5 \\ -c - 2d = 13 \\ 4d = 0
+		\end{array}
+	\end{align*}
+	So the general solution is $\begin{bmatrix}
+	15 \\ -16 \\ -13 \\ 0
+	\end{bmatrix}$ 
+	If we apply the same minimization technique from the previous problem, we see that the minimum is $\boxed{\begin{bmatrix}
+		\frac{9}{11} \\ -\frac{9}{11} \\ \frac{8}{11} \\ \frac{7}{11}
+		\end{bmatrix}}$
 \end{document}
