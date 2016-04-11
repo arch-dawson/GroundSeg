@@ -2,6 +2,8 @@ import binascii  # Used for converting hex string to hexadecimal
 
 import openpyxl  # Used for reading/writing excel files
 
+import re  # Used for parsing unit conversions
+
 import math  # Need to use log2 for conversions
 
 # import datetime  # Used for creating the date stamp on the files
@@ -15,6 +17,16 @@ xlsxFileName = 'BeaconDefinition.xlsx'
 # INSERT THE MIN AND MAX OF INDICES WHERE THE BYTE LENGTHS ARE
 minIndex = 'F2'
 maxIndex = 'F42'
+
+# ADD INDICES FOR UNIT CONVERSIONS LINE
+# USE 'E' OR 'e' FOR EXPONENTIAL NOTATION: '123e7', NOT '123*10^7'
+# USE 'NaN' OR '1' IF NO CONVERSION
+unitMinIndex = 'H2'
+unitMaxIndex = 'H42'
+
+# INDICES FOR DATA TYPE
+typeMinIndex = 'G2'
+typeMaxIndex = 'G42'
 
 # CHANGE THE NAME OF THE FILE YOU WANT TO PARSE
 parseFileName = 'fakeBeacon'
@@ -59,6 +71,11 @@ def beaconReader(beaconData, beaconSheet):
             outVals.append(decBeacVal)
     return
 
+"""
+It's better to use the general parser even for beacons, since it's easier to handle uint with binary
+Will need to add functionality to the program calling this to check if the file is a beacon or not.
+Could also add that here.
+"""
 
 def generalReader(genData, genSheet):
     lengths = []
@@ -89,8 +106,25 @@ def generalReader(genData, genSheet):
         else:
             length = int(length)
 
+    convVals = []
+
+    p = re.compile('\d+(\.\d+)? +(e|E)? +(\d+)?')  # Regular expression for number, optional decimal and exponent
+
+    for convRow in sheet[unitMinIndex:unitMaxIndex]:
+        for convObj in convRow:
+            if convObj == 'NaN':
+                convVals.append(1)  # We're going to be multiplying by this, so just a 1 is fine for no conversion
+            elif not p.match(convObj):
+                raise Exception('Weird value in unit conversions.  Use \'NaN\' if no conversion, ')
+            else:
+                mo = p.search(convObj)
+                convVals.append(float(mo.group()))
+
+    # Use [a*b for a,b in zip(lista,listb)] for converting
+
 
 generalReader(data, sheet)
+
 """
 now = datetime.datetime.now()
 

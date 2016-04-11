@@ -10,11 +10,21 @@ timeLocation = 2  # Where the system time is located in the excel file. Used to 
 # Min and max indices in the .xlsx file of the byte lengths
 minIndex = 'F2'
 maxIndex = 'F42'
-# Could aim to make this system more general in the future.
+
+# Add indices for unit conversions line
+unitMinIndex = 'H2'
+unitMaxIndex = 'H42'
+
+# Indices for data type
+typeMinIndex = 'G2'
+typeMaxIndex = 'G42'
+
 
 xlsxFileName = 'BeaconDefinition.xlsx'
 
 beaconFileName = 'fakeBeacon'
+
+
 
 # --------------------------------------------------------
 
