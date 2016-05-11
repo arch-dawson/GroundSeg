@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#sort -nr $1 | head -${2:-10}
+
+#albumSort filename [howmany]
+
+filename=$1
+howmany=${2:-10}  #Return default of 10 is the vaiable isn't defined
+
+sort -nr $filename | head -$howmany
+
+
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+# declare STRING varriable
+STRING="Hello World"
+echo $STRING
