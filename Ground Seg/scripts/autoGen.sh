@@ -19,11 +19,13 @@ headerStr=$(od -A n -t x1 header) # Gets the header from the 'header' file, conv
 
 headerStr=${headerStr//[[:space:]]/} # Removes spaces 
 
-headerStr=${headerStr:0:30} # Remove newline character
+#headerStr=${headerStr:0:30} # Remove newline character
 
 data=$(openssl rand -hex 120) # Create 120 random hex bytes
 
 outStr="$headerStr$data$headerStr" # Combine two headers and data into one  string
+
+echo $headerStr
 
 echo $outStr >> $path/$str # Append outStr to file
 
