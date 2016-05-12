@@ -9,8 +9,6 @@ path="../testFiles/"
 
 cd $path #Folder to create files in 
 
-pwd
-
 str="testFile$(date +%s)"  # Creating file name with date stamp
 
 touch $str # Creating the actual file
@@ -24,8 +22,6 @@ headerStr=${headerStr//[[:space:]]/} # Removes spaces
 data=$(openssl rand -hex 120) # Create 120 random hex bytes
 
 outStr="$headerStr$data$headerStr" # Combine two headers and data into one  string
-
-echo $headerStr
 
 echo $outStr >> $path/$str # Append outStr to file
 
