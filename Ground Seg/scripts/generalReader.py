@@ -16,11 +16,7 @@ from bitstring import BitArray
 # import datetime  # Used for creating the date stamp on the files
 
 
-<<<<<<< HEAD
 # ====== CHANGE TO REFLECT LAYOUT OF TELEMETRY DEFINITION ======
-=======
-# ====== CHANGE THIS BIT IF YOU CHANGE TELEMETRY DEFINITION ======
->>>>>>> master
 
 # SUB IN YOUR FILE NAME HERE WHERE THE BYTE LENGTHS ARE
 xlsxFileName = 'BeaconDefinition.xlsx'
