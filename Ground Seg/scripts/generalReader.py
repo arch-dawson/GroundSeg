@@ -16,7 +16,11 @@ from bitstring import BitArray
 # import datetime  # Used for creating the date stamp on the files
 
 
+<<<<<<< HEAD
 # ====== CHANGE TO REFLECT LAYOUT OF TELEMETRY DEFINITION ======
+=======
+# ====== CHANGE THIS BIT IF YOU CHANGE TELEMETRY DEFINITION ======
+>>>>>>> master
 
 # SUB IN YOUR FILE NAME HERE WHERE THE BYTE LENGTHS ARE
 xlsxFileName = 'BeaconDefinition.xlsx'
@@ -135,6 +139,13 @@ def generalReader(genData, genSheet):
         binVal = bin(int(chunk, 16))[2:].zfill(numBits)
         binVals.append(binVal)
 
+#    for length in lengths:
+#        length *= 8.0  # Bytes to bits
+#        if not round(length) == length:  # Checking if all the bits are whole numbers
+#            raise Exception('Non-whole number of bits')
+#        else:
+#            length = int(length)
+
     # JUST MAKE SURE THAT THE DATA TYPES HAVE THESE IN THEM
     # MAKE SURE THERE'S A 'u' IN THE STRING IF IT'S UINT
     strRe = re.compile('str')
@@ -164,16 +175,7 @@ def generalReader(genData, genSheet):
                 # 'allstarcosgc' is 12 characters long.  Imma kill someone
             dataCount += 1
 
-    print(decVals)
-
     # Now we have the full set of binary data, we can re-chop it up.  This is necessary to account for partial bytes.
-
-    for length in lengths:
-        length *= 8.0  # Bytes to bits
-        if not round(length) == length:  # Checking if all the bits are whole numbers
-            raise Exception('Non-whole number of bits')
-        else:
-            length = int(length)
 
     convVals = []
 
@@ -190,6 +192,8 @@ def generalReader(genData, genSheet):
                 convVals.append(float(mo.group()))
 
     # Use [a*b for a,b in zip(lista,listb)] for converting
+    convertedVals = [a*b for a,b in zip(decVals,convVals)]
+    print(convertedVals)
 
 
 generalReader(data, sheet)
