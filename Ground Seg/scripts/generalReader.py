@@ -3,6 +3,7 @@
 import binascii  # Used for converting hex string to hexadecimal
 
 import openpyxl  # Used for reading/writing excel files
+from openpyxl.cell import get_column_letter 
 
 import re  # Used for parsing unit conversions
 
@@ -15,37 +16,69 @@ from bitstring import BitArray
 # import datetime  # Used for creating the date stamp on the files
 
 
-# ====== CHANGE THIS BIT ======
+# ====== CHANGE TO REFLECT LAYOUT OF TELEMETRY DEFINITION ======
 
 # SUB IN YOUR FILE NAME HERE WHERE THE BYTE LENGTHS ARE
 xlsxFileName = 'BeaconDefinition.xlsx'
 
-# INSERT THE MIN AND MAX OF INDICES WHERE THE BYTE LENGTHS ARE
-minIndex = 'F2'
-maxIndex = 'F42'
-
-# ADD INDICES FOR UNIT CONVERSIONS LINE
-# USE 'E' OR 'e' FOR EXPONENTIAL NOTATION: '123e7', NOT '123*10^7'
-# USE 'NaN' OR '1' IF NO CONVERSION
-unitMinIndex = 'H2'
-unitMaxIndex = 'H42'
-
-# INDICES FOR DATA TYPE
-typeMinIndex = 'G2'
-typeMaxIndex = 'G42'
-
 # CHANGE THE NAME OF THE FILE YOU WANT TO PARSE
 parseFileName = 'mostRecent'
 
-# timeLocation = 2  # Where the system time is located in the excel file. Used to generate the time stamp.
+# NUMBER OF ROWS AT THE TOP WITHOUT DATA
+descRows = 1
 
-# --------------------------------------------------------
+# ====== END OF USER CHANGES ======
 
 wb = openpyxl.load_workbook(xlsxFileName)  # Loads the beacon definition excel file
 
 sheetList = wb.get_sheet_names()  # Loads in the names of the sheets.
 
 sheet = wb.get_sheet_by_name(sheetList[0])  # As of 3/8/16 we only want the first sheet
+
+maxRow = sheet.max_row
+
+maxCol = sheet.max_column
+
+firstRowCoords = tuple(sheet['A1':get_column_letter(maxCol)+'1'])
+
+firstRow = []
+
+for obj in firstRowCoords:
+    for temp in obj:
+        firstRow.append(temp.value)
+
+# MIN AND MAX OF INDICES WHERE THE BYTE LENGTHS ARE
+
+byteColVal = [item for item in firstRow if 'byt' in str(item).lower()]
+if byteColVal:
+    minIndex = chr(ord(get_column_letter(firstRow.index(byteColVal[0]))) + 1) + str(1 + descRows)
+    maxIndex = chr(ord(get_column_letter(firstRow.index(byteColVal[0]))) + 1) + str(maxRow)
+else:
+    minIndex = 'F' + str(1 + descRows)
+    maxIndex = 'F' + str(maxRow)
+    
+# ADD INDICES FOR UNIT CONVERSIONS LINE
+# USE 'E' OR 'e' FOR EXPONENTIAL NOTATION: '123e7', NOT '123*10^7'
+# USE 'NaN' OR '1' IF NO CONVERSION
+unitColVal = [item for item in firstRow if 'conv' in str(item).lower()]
+if byteColVal:
+    unitMinIndex = chr(ord(get_column_letter(firstRow.index(unitColVal[0]))) + 1) + str(1 + descRows)
+    unitMaxIndex = chr(ord(get_column_letter(firstRow.index(unitColVal[0]))) + 1) + str(maxRow)
+else:
+    unitMinIndex = 'H' + str(1 + descRows)
+    unitMaxIndex = 'H' + str(maxRow)
+
+# INDICES FOR DATA TYPE 
+typeColVal = [item for item in firstRow if 'type' in str(item).lower()]
+if byteColVal:
+    typeMinIndex = chr(ord(get_column_letter(firstRow.index(typeColVal[0]))) + 1) + str(1 + descRows)
+    typeMaxIndex = chr(ord(get_column_letter(firstRow.index(typeColVal[0]))) + 1) + str(maxRow)
+else:
+    typeMinIndex = 'G' + str(1 + descRows)
+    typeMaxIndex = 'G' + str(maxRow)
+
+
+# --------------------------------------------------------
 
 f = open(parseFileName)  # Opens the hex beacon file to be read in.
 
@@ -84,8 +117,6 @@ Could also add that here.
 """
 
 def generalReader(genData, genSheet):
-
-    print('?')
     lengths = []
     for rowOfCellObjects in sheet[minIndex:maxIndex]:  # Going through the row of values.
         for cellObj in rowOfCellObjects:  # Iterating through each cell of the row
