@@ -7,15 +7,15 @@
 #======ENTER FOLDER FOR GENERATED FILES======
 path="../testFiles/"
 
+headerStr=$(od -A n -t x1 header) # Gets the header from the 'header' file, converts to hex
+
+headerStr=${headerStr//[[:space:]]/} # Removes spaces
+
 cd $path #Folder to create files in 
 
 str="testFile$(date +%s)"  # Creating file name with date stamp
 
-touch $str # Creating the actual file
-
-headerStr=$(od -A n -t x1 header) # Gets the header from the 'header' file, converts to hex
-
-headerStr=${headerStr//[[:space:]]/} # Removes spaces 
+touch $str # Creating the actual file 
 
 #headerStr=${headerStr:0:30} # Remove newline character
 
