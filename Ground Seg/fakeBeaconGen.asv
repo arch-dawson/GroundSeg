@@ -1,4 +1,0 @@
-fid = fopen('ISSdata','r');
-
-line = fgetl(fid);
-

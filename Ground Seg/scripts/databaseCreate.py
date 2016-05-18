@@ -15,7 +15,7 @@ sheet = wb.get_sheet_by_name(sheetList[0])
 
 maxRow = sheet.max_row
 
-firstColCoords = tuple(sheet['A2':'A'+maxRow])
+firstColCoords = tuple(sheet['A2':'A'+str(maxRow)])
 
 firstCol = []
 
@@ -28,14 +28,18 @@ strOut = 'CREATE TABLE fakeTelemetry ('
 for item in firstCol:
     strOut = strOut + item + ' VARCHAR(25), '
 
+strOut = strOut[:-2]  # On extra space and comma
+
 strOut = strOut + ');'
+
+print(strOut)
 
 #====== mySQL Startup ======
 fakeSatellite = sql.connect("localhost","root","P0l@r3ubE","fakeSatellite")
 
 cursor = fakeSatellite.cursor()
 
-cursor.execute("DROP TABLE IF EXISTS `fakeTelemetry`")
+cursor.execute("DROP TABLE IF EXISTS fakeTelemetry;")
 
 cursor.execute(strOut)
 
