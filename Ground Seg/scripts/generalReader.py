@@ -13,10 +13,19 @@ import sys # For command line arguments
 
 from bitstring import BitArray
 
-# import datetime  # Used for creating the date stamp on the files
+import MySQLdb as sql  # For writing information to database
 
+# COMMAND LINE ARGUMENTS
+# python3 generalReader.py xlsxFileName parseFileName databaseName tableName
+# EXAMPLE: python3 generalReader.py BeaconDefinition.xlsx mostRecent
 
-# ====== CHANGE TO REFLECT LAYOUT OF TELEMETRY DEFINITION ======
+# ====== CHANGE TO REFLECT LAYOUT OF TELEMETRY DEFINITION AND DATABASE ======
+
+# DATABASE NAME IN MYSQL
+databaseName = "fakeSatellite"
+
+# TABLE NAME WITHIN DATABSE
+tableName = "fakeTelemetry"
 
 # SUB IN YOUR FILE NAME HERE WHERE THE BYTE LENGTHS ARE
 xlsxFileName = 'BeaconDefinition.xlsx'
@@ -77,6 +86,15 @@ else:
     typeMinIndex = 'G' + str(1 + descRows)
     typeMaxIndex = 'G' + str(maxRow)
 
+# INDICES FOR ROW LABELS
+nameColVal = [item for item in firstRow if 'Field' in str(item).lower()]
+if nameColVal:
+    nameMinIndex = chr(ord(get_column_letter(firstRow.index(nameColVal[0]))) + 1) + str(1 + descRows)
+    nameMaxIndex = chr(ord(get_column_letter(firstRow.index(nameColVal[0]))) + 1) + str(maxRows)
+else:
+    nameMinIndex = 'A' + str(1 + descRows)
+    nameMaxIndex = 'A' + str(maxRow)
+
 
 # --------------------------------------------------------
 
@@ -84,37 +102,6 @@ f = open(parseFileName)  # Opens the hex beacon file to be read in.
 
 data = f.read()
 f.close()
-
-
-### Pass only the raw data w/o header/footer?  Could remove some if statements
-##def beaconReader(beaconData, beaconSheet):
-##    beacLengths = []
-##    for beaconRow in beaconSheet[minIndex:maxIndex]:  # Going through the row of values.
-##        for cellBeacObj in beaconRow:  # Iterating through each cell of the row
-##            readBeacVal = int(cellBeacObj.value)
-##            beacLengths.append(readBeacVal)  # Appends all the lengths read in from the excel file
-##
-##    beacTotal = 0  # Use this to keep track of where we are in the total number of bytes.
-##
-##    outVals = []
-##
-##    for beacLength in beacLengths:
-##        beacChunk = data[beacTotal:(beacTotal+beacLength-1)]
-##        beacTotal += beacLength
-##        if beacChunk == 'allstarcosgc':
-##            outVals.append(beacChunk)
-##            continue
-##        else:
-##            hexBeacVal = binascii.hexlify(beacChunk)
-##            decBeacVal = int(hexBeacVal, 16)
-##            outVals.append(decBeacVal)
-##    return
-
-"""
-It's better to use the general parser even for beacons, since it's easier to handle uint with binary
-Will need to add functionality to the program calling this to check if the file is a beacon or not.
-Could also add that here.
-"""
 
 def generalReader(genData, genSheet):
     lengths = []
@@ -189,10 +176,34 @@ def generalReader(genData, genSheet):
 
     # Use [a*b for a,b in zip(lista,listb)] for converting
     convertedVals = [a*b for a,b in zip(decVals,convVals)]
-    print(convertedVals)
+    return convertedVals
 
 
-generalReader(data, sheet)
+def dbWrite(dataList):
+    database = sql.connect("localhost","root","P0l@r3ubE",databaseName)
+
+    cursor = database.cursor()
+
+    nameStr = '('
+    for nameRow in sheet[nameMinIndex:nameMaxIndex]:
+        for nameValue in nameRow:
+            nameStr = nameStr + nameValue + ', '
+    nameStr = nameStr[:-2] + ')' # One extra space and comma
+    
+
+    valuesStr = "VALUES ("
+    
+    for dataVal in dataList:
+        valuesStr = valuesStr + dataVal + ', '
+
+    valuesStr = valuesStr[:-2] + ')'
+
+    dbString = "INSERT INTO " + tableName + nameStr + valuesStr
+
+    print(dbString)
+
+values = generalReader(data, sheet)
+dbLineGen(values)
 
 
 """
