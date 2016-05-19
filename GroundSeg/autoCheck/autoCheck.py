@@ -1,0 +1,16 @@
+#!/usr/bin/Python3
+
+from subprocess import Popen, PIPE
+import subprocess
+
+def main(parseQueue, dataFolder, mRFile):
+    # dataFolder has the form '../testFiles'
+    # mRfile can just be called 'mostRecent'
+    newFiles, err = Popen(["autoCheck/autoChecker.sh",dataFolder,mRFile], stdout=PIPE).communicate()
+    for file in newFiles.decode('utf-8').split():
+        parseQueue.put(file)
+
+import queue
+
+newQ = queue.Queue()
+main(newQ, "../testFiles", "mostRecent")

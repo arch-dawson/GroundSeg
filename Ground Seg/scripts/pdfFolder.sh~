@@ -1,5 +1,0 @@
-#!/bin/bash
-cd /home/dawson/'Dropbox (SASS)'/LaTeX/'Spring 2016'
-mkdir PDFs
-
-mv *.pdf /home/dawson/'Dropbox (SASS)'/LaTeX/'Spring 2016'/PDFs

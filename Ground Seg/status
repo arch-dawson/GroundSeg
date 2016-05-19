@@ -1,4 +1,0 @@
-CONNECT;success;0xC0A801A8
-RESULT;0xC0A801A8;dawsonMagic.txt;0KB;copy;0.00KB/s
-HSTATS;target;copy;overwrite;skip;totalMB;time;speedKB/s
-STATS;0xC0A801A8;1;0;0;0MB;0.002;0.00KB/s

@@ -1,0 +1,37 @@
+#!/bin/bash
+# First command line argument is the relative path from code to folder with files to be parsed
+# Second command line argument is the most Recent file so the code knows where to stop
+
+cd 'autoCheck/'
+
+prevDir=$(pwd)
+
+echo $prevDir
+
+mostRecentFile=$2
+
+mostRecentContents=$(cat $mostRecentFile)
+
+pastTimeStamp="${mostRecentContents//[!0-9]/}"
+
+cd $1
+
+todoCount=0
+
+for temp in $(ls | sort -n -r); do # Sorts with newest first
+    fileTimeStamp="${temp//[!0-9]/}"
+    if [ "$pastTimeStamp" == "$fileTimeStamp" ]; then
+	break
+    fi
+    todoCount=$((todoCount+1))
+done
+
+newMostRecent=$(ls | sort -n -r | head -n 1)
+
+if (($todoCount > 0)); then
+    echo $(ls | sort -n -r | head -n todoCount)
+fi
+
+cd "$prevDir"
+
+echo $newMostRecent > $mostRecentFile
