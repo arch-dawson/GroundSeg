@@ -87,7 +87,7 @@ else:
     typeMaxIndex = 'G' + str(maxRow)
 
 # INDICES FOR ROW LABELS
-nameColVal = [item for item in firstRow if 'field' in str(item).lower()]
+nameColVal = [item for item in firstRow if 'Field' in str(item).lower()]
 if nameColVal:
     nameMinIndex = chr(ord(get_column_letter(firstRow.index(nameColVal[0]))) + 1) + str(1 + descRows)
     nameMaxIndex = chr(ord(get_column_letter(firstRow.index(nameColVal[0]))) + 1) + str(maxRows)
