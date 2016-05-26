@@ -1,16 +1,15 @@
-#!/usr/bin/Python3
+#!/usr/bin/Python
 
 from subprocess import Popen, PIPE
 import subprocess
-
-def main(parseQueue, dataFolder, mRFile):
-    # dataFolder has the form '../testFiles'
-    # mRfile can just be called 'mostRecent'
-    newFiles, err = Popen(["autoCheck/autoChecker.sh",dataFolder,mRFile], stdout=PIPE).communicate()
-    for file in newFiles.decode('utf-8').split():
-        parseQueue.put(file)
-
 import queue
 
-newQ = queue.Queue()
-main(newQ, "../testFiles", "mostRecent")
+def main(parseQueue, dataFolder, mRFile):
+    # dataFolder has the form 'testFiles/'
+    # mRfile can just be called 'mostRecent'
+    
+    newFiles, err = Popen(["autoCheck/autoChecker.sh",'../'+dataFolder,mRFile], stdout=PIPE).communicate()
+    for newFile in newFiles.decode('utf-8').split():
+        parseQueue.put(dataFolder+newFile)
+
+    # ADD TIMER STUFF HERE
