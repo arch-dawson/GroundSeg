@@ -29,12 +29,14 @@ class Database:
         
         if not dbResult:
             self.dbCursor.execute(tableCreateStr)
+            self.dbConnection.commit()
         
 
     def dbWrite(self, data):
         dbString = self.writeString(data)
 
         self.dbCursor.execute(dbString)
+        self.dbConnection.commit()
         return
         
 
