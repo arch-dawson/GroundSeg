@@ -1,0 +1,15 @@
+-The first row should be the label of all of the columns.
+-ONLY the first row should be used for this.
+
+-Some conventions are used to make the generalReader function work. (Case doesn't matter for any of these) The string below should appear somewhere in the label for the column. None of the other columns should match this string
+--The column with byte lengths should have 'byt'
+--The column with variable labels should have 'field'
+--The engineering unit conversions should have 'conv'
+    ---If there is no conversion, enter a 1. Use 'E' or 'e' for exponential notation: '123e7', not '123*10^7'
+--Data type column should have 'type'. The entries also have conventions:
+       ---String, 'str'.
+       ---Integer, 'int'
+       ---Unsigned Integer, 'int', and put a 'u' in there somewhere
+       ---Double, 'doub'
+       ---Boolean, 'bool'
+     
