@@ -14,6 +14,16 @@ tableName = 'fakeTelemetry' # Be kinda funny if you didn't change this
 beaconFolder = 'testFiles/'
 mostRecentFile = 'mostRecent' # Possibly the most useless declaration
 
+# ==== AUTO GEN FAKE BEACONS (TEMPORARY) ====
+from subprocess import Popen, PIPE
+import random
+def autoGen():
+    Popen(["fakeBeaconGen/autoGen.sh"])
+    threading.Timer(float(random.randint(10,20)),autoGen).start()
+    return
+
+autoGen()
+
 # ==== MAKING THE QUEUES ==== 
 parseQueue = queue.Queue()
 databaseQueue = queue.Queue()

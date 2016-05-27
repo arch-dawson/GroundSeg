@@ -34,7 +34,6 @@ class Database:
     def dbWrite(self, data):
         dbString = self.writeString(data)
 
-        print(dbString)
         self.dbCursor.execute(dbString)
         return
         
@@ -47,7 +46,10 @@ class Database:
         outStr = outStr[:-2]
         outStr += ") VALUES ("
         for point in data:
-            outStr = outStr + str(point) + ', '
+            if not isinstance(point, str):
+                outStr = outStr + str(point) + ', '
+            else:
+                outStr = outStr + '\'' + str(point) + '\'' + ', '
         outStr = outStr[:-2]
         outStr += ");"
 
@@ -98,7 +100,7 @@ class Database:
 
         for type in typeVals:
             if 'int' in type:
-                typeList.append(" INT")
+                typeList.append(" BIGINT")
             elif 'bool' in type:
                 typeList.append(" BOOL")
             elif 'doub' in type or 'float' in type:

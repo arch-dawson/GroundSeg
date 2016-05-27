@@ -7,6 +7,7 @@ import math
 from bitstring import BitArray
 
 
+
 class ParseInfo:
     def __init__(self, sheet, nameInd, byteInd, typeInd, convInd, unitInd):
         self.sheet = sheet
@@ -64,7 +65,6 @@ class Reader:
 
         self.parsingInfo = ParseInfo(self.sheet, self.nameColInd, self.byteColInd, self.typeColInd, self.convColInd, self.unitColInd)
 
-        #print(parsingInfo.varNames)
 
     def findIndex(self, searchStr):
         # Finds the indices of a column in the telemetry definition

@@ -5,7 +5,8 @@
 # Assumes autoGen.sh is in an adjacent folder to testFiles 
 
 #======ENTER FOLDER FOR GENERATED FILES======
-path="../testFiles/"
+path="testFiles/" # When calling from main
+# path="../testFiles/" # When calling on its own
 
 headerStr=$(od -A n -t x1 header) # Gets the header from the 'header' file, converts to hex
 
@@ -23,8 +24,8 @@ data=$(openssl rand -hex 120) # Create 120 random hex bytes
 
 outStr="$headerStr$data$headerStr" # Combine two headers and data into one string
 
-echo $outStr >> $path/$str # Append outStr to file
-
+#echo $outStr >> $path/$str # Append outStr to file
+echo $outStr >> $str # Write outStr to file
 
 
 
