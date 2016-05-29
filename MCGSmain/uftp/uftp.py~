@@ -1,0 +1,26 @@
+from subprocess import Popen, PIPE
+import shlex
+
+class uftpConnection:
+    def __init__(self,parseQueue,beaconFolder):
+        self.parseQueue = parseQueue
+        self.beaconFolder = beaconFolder
+
+        self.initClnt()
+        
+
+    def initServ(self):
+        pass
+
+    def initClnt(self):
+        path, err = Popen("pwd", stdout=PIPE).communicate()
+        clnt_cmd = "uftpd -D " + path.decode('utf-8').rstrip() + '/' + self.beaconFolder
+        #try:
+        result, err =Popen(shlex.split(clnt_cmd), stdout=PIPE).communicate()
+        print(result)
+        #except:
+        #    print("Sad face")
+
+
+def main(parseQueue,beaconFolder):
+    uftpConn = uftpConnection(parseQueue,beaconFolder)
