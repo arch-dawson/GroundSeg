@@ -14,6 +14,7 @@ class uftpConnection:
         # Could just do a search to see if file exists?
         # Could send really big file then close connection halfway through
         # -i file_list.  Seperate files to be sent, one per line.
+        # USE FULL FILEPATH FOR ABOVE
         # -C tfmcc to dynamically determine transmission rate
         # AES-256-CBC, SHA-1 hashing, autogen 512-bit RSA key:
         # uftp -Y aes256-cbc -h sha1 [-k keyfile]
