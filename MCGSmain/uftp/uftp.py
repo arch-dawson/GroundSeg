@@ -7,7 +7,7 @@ class uftpConnection:
         self.beaconFolder = beaconFolder
 
         self.initClnt()
-        
+
 
     def initServ(self):
         # Add -f and -F options
@@ -28,7 +28,7 @@ class uftpConnection:
         # Default for -x is 2
         # -s robustness (10-50), default 20. number of times sending waiting for client
         # -t time-to-live
-        # -r init_grtt[:min_grtt:max_grtt] CHANGE IF SENDING FAILS 
+        # -r init_grtt[:min_grtt:max_grtt] CHANGE IF SENDING FAILS
         pass
 
     def initClnt(self):

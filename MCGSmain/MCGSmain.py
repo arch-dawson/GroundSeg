@@ -44,7 +44,7 @@ parsing_args = (telemetryDef, parseQueue, databaseQueue)
 database_args = (databaseQueue, dbName, tableName, telemetryDef)
 uftp_args = (parseQueue,beaconFolder)
 
-# ==== CREATING THE THREADS ==== 
+# ==== CREATING THE THREADS ====
 threads = [
     threading.Thread(name='autoCheck', target=autoCheck.main, args=autoCheck_args),
     threading.Thread(name='parsing', target=parsing.main, args=parsing_args),
