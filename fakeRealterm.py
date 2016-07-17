@@ -40,11 +40,11 @@ class serialConn:
         
         for port in ports:
             try:
-                self.ser.port = port
+                self.ser.port = port.split()[0]
                 self.ser.open()
                 break # If it gets to here without throwing exception, we're fine
             except:
-                print('Port {} failed to open.'.format(port))
+                print('Port {} failed to open.'.format(port.split()[0]))
                 self.ser.port = ''
         if not self.ser.port:
             self.ser.port = '/dev/ttyUSB0' # Default is what works on most linux machines
