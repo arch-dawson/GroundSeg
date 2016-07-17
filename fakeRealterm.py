@@ -21,6 +21,10 @@ import argparse
 # -Display mode: Display incoming data
 # -File Specification: Specify file to be saved into
 
+# Update TLE button wiil take the NORAD ID as argument and returns the 3LE
+# Add fileName: Polarcube_timestamp.txt
+# When Matlab button is pushed, start open display and monitor for beacons by default.
+
 
 class serialConn:
     def __init__(self, monitor, disp, fileStr):
