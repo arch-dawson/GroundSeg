@@ -4,6 +4,8 @@ import argparse
 import sys
 
 # Space Track allows no more than 20 requests per minute
+# On Windows, run 'py -3 ./spacetrack.py -id 41474'
+# Change id above to different NORAD IDs if necessary
 
 def main(noradID):
     outFile = str(noradID) + '_3LE.txt'
