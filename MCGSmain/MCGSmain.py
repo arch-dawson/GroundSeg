@@ -10,13 +10,11 @@ from uftp import uftp
 
 # ==== DEFINING STUFF ====
 # Change database soon
-# Table name doesn't matter
-# Leave mostRecent File
 telemetryDef = "BeaconDefinition.xlsx"
 dbName = 'fakeSatellite' # Change before launch.  Duh.
 tableName = 'fakeTelemetry' # Be kinda funny if you didn't change this
-beaconFolder = 'testFiles/'
-mostRecentFile = 'mostRecent' # Possibly the most useless declaration
+path = '/home/dev/PolarCube/beacons'
+mostRecentFile = '/home/dev/PolarCube/mostRecent' 
 
 # ==== AUTO GEN FAKE BEACONS (TEMPORARY) ====
 # Autogen fake stuff
@@ -29,8 +27,6 @@ def autoGen():
     threading.Timer(float(random.randint(10,20)),autoGen).start()
     return
 
-# autoGen()
-
 # ==== MAKING THE QUEUES ====
 # Queues are for the threads
 # Global synchronization
@@ -39,7 +35,7 @@ parseQueue = queue.Queue()
 databaseQueue = queue.Queue()
 
 # ==== DEFINING ARGUMENTS TO EACH THREAD ====
-autoCheck_args = (parseQueue,beaconFolder,mostRecentFile)
+autoCheck_args = (parseQueue,mostRecentFile,path)
 parsing_args = (telemetryDef, parseQueue, databaseQueue)
 database_args = (databaseQueue, dbName, tableName, telemetryDef)
 uftp_args = (parseQueue,beaconFolder)
@@ -48,8 +44,8 @@ uftp_args = (parseQueue,beaconFolder)
 threads = [
     threading.Thread(name='autoCheck', target=autoCheck.main, args=autoCheck_args),
     threading.Thread(name='parsing', target=parsing.main, args=parsing_args),
-    threading.Thread(name='database',target=database.main, args=database_args),
-    threading.Thread(name='uftp',target=uftp.main, args=uftp_args),
+#    threading.Thread(name='database',target=database.main, args=database_args),
+#    threading.Thread(name='uftp',target=uftp.main, args=uftp_args),
 ]
 
 # queue.get() will remove and return. Will wait if nothing available
