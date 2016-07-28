@@ -143,8 +143,3 @@ def main(telemetryDef, parseQueue, databaseQueue):
             convVals = generalReader.conversion(decVals)
 
             databaseQueue.put(convVals)
-    
-
-    
-                
-        
