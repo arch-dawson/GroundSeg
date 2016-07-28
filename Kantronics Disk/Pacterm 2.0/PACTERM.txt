@@ -1,0 +1,130 @@
+                             PACTERM 2.0
+
+
+                              OWNERSHIP
+
+Pacterm 2.0 is the property of Kantronics Co., Inc. 
+
+Pacterm 2.0  is (c) Copyright 1996 by Kantronics Co., Inc. All rights reserved. 
+
+                            TERMS OF USE
+
+It is the user's responsibility to be familiar with these terms and to accept them before using Pacterm. In summary, the terms state that: (1) Pacterm is licensed to users who conform to the conditions of the license agreement in the printed documentation, with Kantronics reserving the
+right to terminate the license agreement if any condition(s) of the agreement are not met, and (2) Pacterm is supplied "as is" with the user bearing all risks with respect to the quality and performance of Pacterm.
+
+                            INTRODUCTION 
+
+Pacterm is a DOS-based terminal communication program used to control the flow
+of information between your PC compatible computer and Kantronics KPC and KAM
+products. Pacterm is shipped with the these TNCs to help you get started using
+them for packet radio communication. 
+
+Pacterm is for use while the TNC is operating in NEWUSER Interface Mode (the
+default mode of operation) or in TERMINAL Interface Mode, which includes all
+NEWUSER commands and many more.
+
+NOTE: You may continue using Pacterm with your TNC after you get up and 
+running, but you do not need to limit yourself to Pacterm. The TNC 
+will operate with a wide range of terminal communication programs.
+
+                      OUR ASSUMPTIONS ABOUT YOU
+
+We assume the following when you use Pacterm with your TNC:
+
+ *  You are using a PC compatible computer that meets the specifications given
+    in your TNC documentation.
+
+ *  You know, or are learning, how to use DOS with your PC compatible computer
+    for basic operations needed to install and run Pacterm.
+
+ *  You have a TNC that is connected, or that will be connected, to your PC
+    computer, as described below and in the TNC manual.
+
+ *  You know, or are learning, how to use your TNC in NEWUSER and/or TERMINAL
+    Interface Mode, along with your PC compatible computer and your transceiver,
+    for packet radio operations.
+
+                       OVERVIEW OF PACTERM FUNCTIONS
+
+You can use Pacterm's MAIN Menu and/or TERMINAL SCREEN to do the following:
+
+ *  Establish communications between your computer and your TNC, while it is
+    operating in NEWUSER or TERMINAL Interface Mode.
+
+ *  Select the COM PORT and BAUD RATE to use for the current Pacterm session
+    (i.e., until you exit to DOS).
+
+ *  Send commands from Pacterm to your TNC.
+
+ *  Send data from Pacterm (i.e., from your computer) to your TNC and receive
+    data from your TNC.
+
+ *  VIEW, PRINT, and/or SAVE information sent from your TNC to your computer.
+
+ *  End a session, either of two ways: (1) Disconnect and EXIT to DOS or (2)
+    EXIT directly to DOS.
+
+
+Other uses of Pacterm are as follows:
+
+ *  SEND a file from your computer to your TNC, for transmission.
+
+ *  Switch the TNC at any time into Command Mode, making it ready to accept
+    commands instead of transmitting data.
+
+ *  Control the flow of data between Pacterm and your TNC as follows: (1) from
+    Pacterm to your TNC -- switch between ONLINE, with your input sent
+    immediately, and OFFLINE, with input stored in a type-ahead buffer and sent
+    when you go back ONLINE and (2) from your TNC to Pacterm --  STOP (hold) or
+    START the flow of data from your TNC to your computer. 
+
+NOTE: As described in the printed manual and shown on the Pacterm MAIN Menu
+Screen, Pacterm can be used with KAM TNCs to operate in HF non-packet modes.
+
+
+
+
+
+                               QUICK START
+
+To get started using Pacterm to communicate with your TNC, do the following:
+
+ 1. Copy the file PACTERM.COM from your Kantronics Program and Information Disk
+    to your hard drive, using DOS or following directions on the disk.
+
+    NOTE: You can INSTALL Pacterm automatically, using the Kantronics Program
+    and Information Disk: Type and enter "TNC", then follow the on-screen
+    instructions, which will also copy this file to the directory you specify.
+
+ 2. Connect your TNC to COM1 or COM2 of your computer, using a standard RS-232C
+    serial modem cable, and make sure the TNC is turned ON.
+
+ 3. Use DOS to change to the drive and directory to which you copied Pacterm.
+
+ 4. Start Pacterm by typing PACTERM and pressing the ENTER key.
+
+
+
+
+ 5. When Pacterm starts, you will be on the MAIN Menu. Use the SETUP functions
+    on the MAIN menu as needed to establish communication with your TNC. The
+    BACKSPACE key will take you to the TERMINAL Screen. Follow the on-screen
+    instructions and use the MAIN Menu and the TERMINAL Screen to control the
+    session and communicate with the TNC.
+
+ 6. If you get the "Pacterm Cannot Communicate" screen the first time you try to
+    go to the TERMINAL Screen, be sure the TNC is turned ON and/or press the F7
+    key to switch the current COM port from COM2 to COM1. If neither of these
+    works, review other possible problems (described on the screen) and keep
+    trying until you establish communication.
+
+ 7. The first time your TNC is used, it will run an AUTOBAUD routine to
+    coordinate the TNC's BAUD rate with the BAUD rate of the terminal
+    communication software in use at the time -- in this case, Pacterm. Follow
+    the on-screen instructions: press the "*" key when the message to do so is
+    displayed, enter your CALLSIGN when asked for it, and then proceed.
+
+REMINDER: The Pacterm manual contains much additional information, including:
+detailed explanations of each function, helpful hints, cautions that warn of
+possible problems, and technical notes.
+

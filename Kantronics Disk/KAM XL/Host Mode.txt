@@ -1,0 +1,611 @@
+
+       
+       
+         
+      Host Mode Programmer's Guide 
+
+   
+      Copyright 2001 Kantronics Co., Inc. All rights reserved.
+      Duplication of this manual without permission of Kantronics
+      Co., Inc. is prohibited.
+
+      Purpose
+
+      This document describes Kantronics' host mode as implemented in
+      Kantronics  TNCs beginning with version 5.0. Prior versions of the
+      host mode are  considered obsolete and will not be described or
+      supported. A complete  description of the host mode format is
+      included, providing software  programmers sufficient information
+      to fully implement support for  Kantronics' products.
+          
+      Scope
+         
+      This document describes the host mode in all Kantronics TNCs. Some
+      units  are single port units (i.e. one radio connection) and
+      others are two-port  units. In addition, some models are capable
+      of operating packet radio  only, while others add the ability to
+      operate HF modes such as RTTY,  G-TOR, and Pactor.
+          
+      Assumptions about the reader
+
+      This document assumes you are familiar with the operation of the
+      TNC in  the command mode (i.e. from the cmd: prompt).  It further
+      assumes that you  are familiar with the purpose of the various
+      commands within the TNC; it  will not attempt to describe the
+      purpose and/or syntax of the individual  commands.  Kantronics
+      provides this document to assist programmers with the  required
+      details to implement host mode support in their programs, 
+	  however, Kantronics will not provide help with coding your program
+	  or suggestions on how to organize your program.
+          
+      Conventions
+
+      Throughout this document, the following conventions will be used.
+	  Hex numbers will be shown as 0xNN where NN is the hex code. <  >
+	  is used to indicate that this is a single character over the
+	  serial port. For example <CTRL-C> indicates the control-c
+	  character (0x03), and <FEND> indicates a single character (0xC0).
+	  <FEND> indicates the character used to begin and end all host
+	  frames. This character is a hex 0xC0 or decimal 192.
+          
+      Overview of Host Mode
+
+      Kantronics host mode provides a standardized method of
+      communication  between a host computer and the TNC. This is
+	  accomplished through a special setting of the INTFACE command
+	  which  enables host mode. Once the TNC is placed in host mode, all
+	  communication  between the TNC and the computer will occur using
+	  this host method.
+	  
+	  Entering Host Mode
+
+      To enter the host mode of operation, you must first be
+      communicating with the TNC. This implies that you have
+      initialized the TNC through its autobaud routine and entered a
+      callsign. Once this is done, place the TNC in the host mode by
+      issuing two command: INTFACE HOST and then RESET.  These are
+      standard terminal mode commands and can therefore be sent with 
+	  any communications program. Remember each command ends with a <CR>
+	  character.
+          
+      Flow Control
+
+      In order to provide flow control between the TNC and computer in host 
+      mode, the RTS and CTS lines must be properly connected, and the software 
+      must be written to provide hardware flow control. To do this, the software 
+      must detect and respond to the state of the CTS line (when CTS is 
+      inactive, the software cannot send any data to the TNC), and must also 
+      control the state of the RTS line. The TNC will not send any data to the 
+      computer when the RTS line is inactive.    
+
+      Host Frame Format
+
+      Once the TNC is placed in host mode, the communication between the 
+      computer and TNC occurs in "frames." All frames begin and end with a 
+      special character called a FEND (Frame End). This character is a hex 0xC0 
+      (192 decimal). The FEND character is not permitted to occur anywhere 
+      within a frame, only at the beginning and end of the frame. the basic 
+      format for host frames includes the opening FEND, a one byte "PORT" byte, 
+      one byte "STREAM" byte, optional "DATA" bytes, and a closing FEND. Most 
+      host frames will contain all of these, however some host frames (detailed 
+      later) may not require all of these items. 
+
+      Data from the host computer to the TNC are considered COMMAND frames, 
+      instructing the TNC to perform a function, or DATA frames which provide 
+      data for transmission to the TNC.    
+      Data Transparency
+
+      If it is necessary to send a FEND character as data rather than the 
+      beginning or end of a frame, as special FESC (Frame escape) character must 
+      be sent first, followed by a TFEND (translated FEND) character. The FESC 
+      character is hex 0xDB (219 decimal) and a TFEND character is hex 0xDC (220 
+      decimal). Should it be necessary to send a FESC character in the data 
+      stream, a similar two-character sequence is required. To insert a  FESC 
+      into the data, your program must send a FESC character followed by a TFESC 
+      (translated FESC). The TFESC character is hex 0xDD (221 decimal).    
+      In summary, the following special two-character translations must be 
+      implemented as indicated below:    
+           To send as data           Send these codes to the TNC
+           0xC0                      0xDB 0xDC
+           0xDB                      0xDB 0xDD    
+           When you receive          Translate it to
+           0xDB 0xDC                 0xC0
+           0xDB 0xDD                 0xDB     
+      When operating host mode, the computer controls the size of a data frame. 
+      When operating packet, the host computer should insure that no frame 
+      contains more than 256 data characters. The TNC paclen parameter will not 
+      affect the size of data frames, as the TNC will transmit one entire host 
+      frame as a single AX.25 frame. In order to remain compatible with the 
+      existing packet radio network, a frame must contain no more than 256 
+      characters.  The above special translations do not affect the transmitted 
+      frame size. For example, if your need to send 256 <FEND> characters in a 
+      single frame, you must translate each <FEND> into a <FESC><TFEND> 
+      combination. This means that you will actually be sending 512 characters 
+      in the data portion of the host frame.  This is legal since the TNC will 
+      convert this before transmission over the radio, resulting in only 256 
+      data bytes in the AX.25 frame that is transmitted.     
+      Front Panel LEDs
+
+      The front panel CON and STA lights are updated whenever a stream change 
+      occurs. Therefore, a host mode program should send a host frame with a 
+      command byte of C and the new PORT and STREAM bytes whenever a user 
+      changes from one display channel to another. For example, to update the 
+      front panel LEDs to show the status of stream B on port 1, send the host 
+      frame <FEND>C1B<FEND>. 
+
+      There may be times during program operation that you would like to issue a 
+      command to determine additional status information about a specific 
+      stream. One example would be to check the number of tries that have 
+      occurred in trying to send a connected packet. To do this, your program 
+      will need to use the TRIES command, however this command does not use the 
+      PORT or STREAM byte. You can still perform this function by using the 
+      following technique. First, send a host frame to switch to the desired 
+      channel (e.g. <FEND>C1D<FEND>). Next send a host frame with the tries 
+      command, and a STREAM byte of 0 (i.e. <FEND>C10TRIES<FEND>). This will 
+      return the tries count for the last stream that was addressed.  Your 
+      program should then update the front panel LEDs to the current stream 
+      status as discussed above.    
+      
+      Data Restrictions
+
+      Using a terminal mode, some characters are assigned special meaning. 
+      <CTRL-C>, for example, returns the TNC to the cmd: prompt from the 
+      converse mode. This results in many characters that cannot be easily 
+      transmitted from standard terminal programs. A list of these characters 
+      can be shown by issuing the DISPLAY C command to your TNC.     
+      
+      Using Kantronics host mode, however, makes sending and receiving any data 
+      possible. Since all transmitted data is contained in a host frame, the TNC 
+      will simply pass the data through for transmission, even if it one of the 
+      spacial characters (i.e. <CTRL-C>). The only exceptions are the two 
+      special characters <FEND> and <FESC> noted above.
+          
+      Buffer usage in the TNC    
+
+      Proper implementation of flow control between the computer and the TNC 
+      requires that you understand the operation of certain buffers within the 
+      TNC. A simplified diagram of the buffers in the TNC is shown below. Note 
+      that data from the computer are first placed in the TTY input buffer. This 
+      buffer is then transferred to a second buffer, depending on the type of 
+      data.     
+                                         Packet buffer    
+                TTY Input                Command buffer
+                                         HF buffer    
+
+      Commands are transferred to a command buffer for processing by the 
+      firmware. Data which are to be transmitted on packet are transferred to a 
+      packet buffer, and data intended for an HF mode (e.g. RTTY) are placed in 
+      the HF buffer.
+
+      Those TNCs which do not support HF modes will not have the HF buffer 
+      indicated above, but will have the Packet buffer and Command buffer.     
+      The size of the buffers can be determined by using the STATUS command. 
+      When operating from the command mode (cmd: prompt), giving the status 
+      command will return a line indicating FREE BYTES. This indicates the 
+      number of free bytes available in the Packet buffer.    
+      
+      As data are moved into the packet buffer (from the TTY Input buffer), the 
+      data is queued for transmission over the radio. Since the radio speed is 
+      generally much slower than the computer-to-TNC speed, it is likely that 
+      new data queued for packet transmission will eventually fill the Packet 
+      buffer. When this happens, the data backs up into the TTY Input buffer. 
+      When the TTY Input buffer is nearly full, the TNC will cause the CTS line 
+      to go inactive, providing hardware flow control and stopping data from the 
+      computer.    
+      
+      An important point here is that the TTY Input buffer is a FIFO (First In, 
+      First Out) buffer. Since commands to the TNC must pass through this buffer 
+      in order to reach the command buffer, any data already in the TTY Input 
+      buffer must be processed before a command can be processed. A well-written 
+      program will, therefore, check the status command periodically and never 
+      permit the FREE BYTES number to reach zero.     
+      
+      When operating with a TNC that supports HF modes as well as packet, the 
+      STATUS command reports two numbers in the FREE BYTES section. A typical 
+      response might indicate "FREE BYTES 1520/3040", indicating 1520 bytes free 
+      in the packet buffer and 3040 bytes free in the HF buffer. As long as your 
+      program never allows free bytes to reach 0, you will be able to issue 
+      commands to the TNC. Note that the status command will only show two 
+      numbers if the TNC is currently operating in the packet mode and 
+      simultaneously operating an HF mode. This is only possible in host mode.   
+        
+
+      Host-to-TNC frame format
+
+      This diagram shows the basic construction of a host frame sent to the TNC 
+      from a computer.    
+
+      Byte 1 | Byte 2  | Byte 3 | Byte 4 | Variable Length | Last Byte
+      FEND   | Command | Port   | Stream | Data            | FEND
+
+      Communication from the host to the TNC must occur in blocks. The block of 
+      data is delimited with a FEND character at the beginning and end of the 
+      block.     
+      
+      Following the opening FEND, the next byte is the command byte. This byte 
+      indicates the type of data contained in this host frame. Valid command 
+      byte characters for all TNCs are C, D, or Q. For those TNCs that support 
+      HF modes, there are additional command byte characters which perform 
+      special functions within an HF mode. These are described in detail in the 
+      Special Command Bytes section of this document.     
+      Following the command byte is the PORT byte. When operating with a single 
+      port (i.e. one radio port) TNC, the PORT byte must be set to an ASCII 1 
+      (0x31). For dual port (i.e. two radio ports) the command byte will be an 
+      ASCII 1 for radio port 1 and an ASCII 2 for radio port 2. Note that the 
+      KAM uses port 1 for VHF operation and port 2 for HF operation (including 
+      HF modes).    
+      
+      The next byte in a host frame is the STREAM byte. This indicates which 
+      data stream (i.e. connected packet stream) is to be affected by the 
+      command. Streams are identified by a letter, and either upper or lower 
+      case may be used. The number of streams available (and therefore the 
+      available stream letters) is determined by the setting of the MAXUSERS 
+      command. For instance, if MAXUSERS is set to 10 (the default), the 
+      available streams are A through J. Some commands do not specifically refer 
+      to a stream, and in these cases the stream byte should be set to an ASCII 
+      0 (0x30).   
+      
+      Following the STREAM byte your program inserts the actual data associated 
+      with this frame. This may be a command, data to be transmitted, or simply 
+      no data at all. Remember that if you need to include the FEND or FESC 
+      characters as part of your data, you must apply the translations discussed 
+      earlier. When entering a command to the TNC, the data portion of a host 
+      frame contains the exact same syntax as entering the command from the cmd: 
+      prompt.     
+      
+      After the data, the frame must be closed with a FEND character.     
+      
+      Host Command Bytes
+
+      When the host (computer) sends a frame to the TNC, the command byte is 
+      used to indicate the type of frame being sent. The following command bytes 
+      are supported:     
+
+      C
+      This indicates that the frame contains a TNC command. The data portion of 
+      this frame contains the command name and the arguments to the command. The 
+      data portion does not contain a carriage return at the end. When sending 
+      commands to the TNC, we recommend you send the full command name instead 
+      of an abbreviation. Kantronics reserves the right to enhance our firmware 
+      which could cause abbreviated commands to fail.     
+      
+      D
+      This indicates that the frame contains data to be transmitted over the 
+      radio. The PORT byte and STREAM byte must be used to select the radio port 
+      and associated stream for the data. This command can also be used to 
+      transmit "UNPROTO" packets by addressing the appropriate PORT, and setting 
+      the STREAM byte to ASCII 0.
+          
+      For transmission of the HF modes (not packet), the PORT byte will be an 
+      ASCII 2 and the STREAM byte will be ASCII 0.    
+      
+      Q
+      This indicates that the TNC is to exit the host mode and return to the 
+      command mode of operation. This command byte does not require a PORT byte 
+      or a STREAM byte, so the full command is simply <FEND>Q<FEND>.    
+      TNC-to-Host frame format
+      
+      This diagram shows the basic construction of a host frame sent to the 
+      computer from the TNC.
+          
+      Byte 1 | Byte 2  | Byte 3 | Byte 4 | Variable Length | Last Byte
+      FEND   | Command | Port   | Stream | Data            | FEND
+      
+      Communication from the TNC to the host occurs in blocks. The block of data 
+      is delimited with a FEND character at the beginning and end of the block.  
+         
+      Following the opening FEND, the next byte is the command byte. This byte 
+      indicates the type of data contained in this frame. 
+         
+      Following the command byte is the PORT byte. When operating with a single 
+      port (i.e. one radio port) TNC, the PORT byte will be set to an ASCII 1 
+      (0x31) for frames containing data, and to an ASCII 0 for command 
+      responses. For dual port TNCs (i.e. two radio ports) the command byte will 
+      be an ASCII 1 for radio port 1 and an ASCII 2 for radio port 2. Note that 
+      the KAM uses port 1 for VHF operation and port 2 for HF operation 
+      (including HF modes).    
+      
+      The next byte in a host frame is the STREAM byte. This indicates which 
+      data stream (i.e. connected packet stream) received the information in 
+      this frame.     
+      
+      Following the STREAM byte is the data associated with this frame. This may 
+      be a command response, data that has been received, other informational 
+      messages from the TNC, or simply no data at all. Remember that if the data 
+      includes the FEND or FESC characters, it will be sent to the computer as a 
+      two-character translation as discussed earlier.    
+      
+      After the data, the frame is closed with a FEND character.     
+      
+      
+      TNC Command Bytes
+
+      When the Tnc sends a frame to the host, the command byte is used to 
+      indicate the type of frame being sent. The following command bytes are 
+      supported:     
+
+      C
+      This indicates that the frame contains a response to a TNC command or 
+      information generated by the TNC. The data portion of this frame may 
+      contain a response to the command, an error message, or other information 
+      generated by the TNC.     
+
+      D
+      This indicates that the frame contains data which was received from the 
+      radio. The PORT byte and STREAM byte indicate which radio port and 
+      associated stream received the data. When operating packet, only data 
+      received from a station you are connected to will have a D for the command 
+      byte.    
+
+      If the TNC is operating in an HF mode, the STREAM byte will be 0 for all 
+      received data.    
+
+      M
+      This indicates that the data in the frame was received as monitored data 
+      (i.e. from a station you are not connected to). If the command byte is M, 
+      the PORT byte will indicate which radio port received the data, and the 
+      STREAM byte will be set to ASCII 0.     
+
+      S
+      This indicates a status message from the TNC caused by a change in the 
+      link state. Such messages include *** CONNECTED TO, *** DISCONNECTED, and 
+      FRMR messages.     
+
+      There is one special form of the S command byte, which consists of two 
+      <FEND> characters with the command byte S, PORT byte 0, and STREAM byte 0, 
+      and a closing FEND. This frame indicates that the TNC has performed a 
+      reset, and any connections that may have existed have been lost. This 
+      frame also occurs when the TNC is powered up if it is in host mode.    
+
+      R
+      This indicates that the TNC has received a connect request from another 
+      station, but is unable to accept the connect at this time. This is 
+      analogous to the "*** connect request" message when operating in terminal 
+      mode.     
+
+      E
+      This command byte only occurs when operating an HF mode and contains the 
+      data being transmitted. This frame occurs at the time the data is actually 
+      transmitted over the radio, allowing the operator to observe the progress 
+      of data over the radio. XMITECHO must be ON for this frame to occur, and 
+      since it applies only to HF modes, the PORT byte will be ASCII 2 and the 
+      STREAM byte will be ASCII 0.    
+
+      T
+      This indicates the frame contains TRACE data. This frame was discontinued 
+      with version 6.0 of the firmware and is no longer supported. The data in 
+      this frame is RAW received data, and includes the AX.25 callsigns in the 
+      bit-shifted format. No processing is done by the TNC on this data. To 
+      disable this frame turn TRACE OFF.    
+
+      I
+      This special TNC-to-host command byte is used only in AMTOR, PACTOR, and 
+      G-TOR to indicate whether your station is currently the sending station or 
+      the receiving station. The frame <FEND>I20<FEND> indicates that you are 
+      the Information Receiving Station (IRS), and the frame <FEND>I21<FEND> 
+      indicates you are the Information Sending Station (ISS).    
+
+      ?
+      This special command byte indicates that this frame is the response to a 
+      host inquiry command. This frame does not contain a PORT or STREAM byte, 
+      and was added to the host mode starting with version 6.1 for those TNCs 
+      supporting HF mode operation. For more details, see the Special Command 
+      Bytes section below.
+
+
+          
+      Commands and Responses    
+
+      Special Command Bytes
+
+      When operating HF modes with a Kantronics TNC, a few special host frames 
+      are required. These frames consist of the standard host <FEND> character 
+      at the beginning and end, but only contain a COMMAND byte. The PORT byte 
+      and STREAM byte are not present since the HF modes can only be operated 
+      through one of the radio ports and only support one conversation at time. 
+      The special COMMAND bytes are listed below, along with a description of 
+      the function for each.    
+
+      T
+      This command byte places the TNC in transmit mode.    
+
+      E
+      This command byte is used to indicate that the TNC should continue to 
+      transmit all data that may be in the transmit buffer, and then allow the 
+      other station to send data to you. The exact action differs depending on 
+      the mode your are operating as follows:     
+
+      RTTY/ASCII/CW/AMTOR FEC/PSK31 - In these modes, the TNC will
+      transmit all remaining data and then return to the receive
+      mode, unkeying your transmitter.
+
+      PACTOR/G-TOR - In these modes, the TNC will transmit all remaining data 
+      and then perform a changeover. This allows the other station to become the 
+      ISS and your station becomes the IRS.    
+
+      AMTOR ARQ - This command byte was not implemented until version 7.1 for 
+      the KAM and KAM Plus TNCs. Prior to these versions, the E command byte 
+      will have no effect. Starting with version 7.1, the E command byte will 
+      cause the TNC to finish sending any data and then insert the changeover 
+      sequence (+?).    
+
+      R
+      This command byte indicates that the TNC should allow the other station to 
+      transmit. The difference between this command byte and the E command byte 
+      (above) is that the TNC returns to the receive mode (or performs the 
+      changeover) immediately. Any data remaining to be transmitted is retained 
+      in the transmit buffer and will be sent when the TNC again enters the 
+      transmit mode. In AMTOR ARQ, this command byte was implemented beginning 
+      with version 7.1    
+
+      X
+      This command byte causes the TNC to exit the current HF operating mode and 
+      return to packet operation. If your station is currently linked to another 
+      station in an ARQ mode (AMTOR/PACTOR/G-TOR), the TNC will attempt to 
+      gracefully disconnect the link before exiting the mode.    
+
+      A
+      This command byte was implemented beginning with version 6.0 for those 
+      TNCs supporting HF modes. It instructs the TNC to abort the current link 
+      (or link attempt). If already linked, the TNC will attempt to perform a 
+      proper disconnect. It will abort the link on the first incorrect signal 
+      from the other station.    
+
+      <CTRL-X>
+      This command byte will dump the transmit buffer for the HF mode. Any data 
+      which has not yet been transmitted will be discarded.    
+
+      L
+      This command byte applies only to the CW mode of operation. It causes the 
+      TNC to lock the CW transmit speed to the speed of the CW signal being 
+      received. This also locks the receive speed, defeating the auto-track 
+      feature when receiving CW. For this reason, you should immediately send 
+      the unlock command byte (see below) after sending the lock.     
+
+      U
+      This command byte applies only to the CW mode of operation. It causes the 
+      TNC to unlock the CW receive speed, allowing the TNC to automatically 
+      adjust the receive speed as the other station varies transmitting speed.   
+
+      <CTRL-Q>
+	  When in PSK31 mode, this command selects the QPSK mode of
+	  transmission and reception.
+
+	  P
+	  When in PSK31 mode, this command selects the BPSK mode of
+	  transmission and reception.
+
+	  Z
+	  When in PSK31 mode, this command causes the bar graph to zoom out.
+
+	  1,2,3,4,5,6,7,8,9, or 0
+	  When in PSK31 mode, this command causes the bar graph to zoom in,
+	  centered at LED #n.
+
+      0
+      In PACTOR and G-TOR modes of operation, when you are linked to
+      another station and you are the IRS, this command byte
+      causes the speed to be set to automatic mode. In this mode, the receiving 
+      station's TNC (IRS) will request speed changes based on data throughput 
+      and errors received. NOTE: When a link is first established, the TNC is in 
+      automatic speed mode, and will always return to automatic mode whenever a 
+      changeover occurs.    
+
+      1
+      In PACTOR and G-TOR modes, when you are linked to another
+      station and you are the IRS, this command byte causes the speed to
+      be set to 100 baud. The TNC will not request a change in speed, even if 
+      the number of errors and data being received indicate that the system 
+      would benefit by increased speed. The TNC will return to automatic speed 
+      mode when a changeover occurs, or when the 0 command byte frame (described 
+      above) is received from the computer. When your station is the ISS, this 
+      command byte is ignored.    
+
+      2
+      In PACTOR and G-TOR modes, when you are linked to another
+      station and you are the IRS, this command byte causes the speed to
+      be set to 200 baud. The TNC will not request a change in speed, even if 
+      the number of errors and data being received indicate that the system 
+      would benefit by increased speed, or that the speed should be decreased 
+      due to excessive errors. The TNC will return to automatic speed mode when 
+      a changeover occurs, or when the 0 command byte frame (described above) is 
+      received from the computer. When you station is the ISS, this command byte 
+      is ignored.     
+
+      NOTE: This command will cause the TNC to attempt to change to 200 baud, 
+      however if the change is not successful, the TNC reverts to its previous 
+      state.     
+
+      3
+      In G-TOR modem, when you are linked to another station and
+      you are the IRS, this command byte causes the speed to be set
+      to 300 baud. The TNC will not request a change in speed, even if the 
+      number of errors and data being received indicate that the speed should be 
+      decreased due to excessive errors. The TNC will return to automatic speed 
+      mode when a changeover occurs, or when the 0 command byte frame (described 
+      above) is received from the computer. When your station is the ISS, this 
+      command byte is ignored.    
+
+      NOTE: This command will cause the TNC to attempt to change to 300 baud, 
+      however if the change is not successful, the TNC reverts to its previous 
+      state.     
+
+      ?
+      This command byte was implemented beginning with version 7.0 for the 
+      Enhancement Board and for the KAM Plus. It causes the TNC to respond with 
+      a status report, mainly concerning the HF mode status. The response from 
+      the TNC will be a host frame with the command byte set to "?", one byte 
+      set to an ASCII 0, and several bytes of status information. Current 
+      versions report 4 bytes of status, however, future implementation may 
+      expand this.     
+
+      The response frame from the TNC will be:    
+           <FEND>?0MSXY<FEND> - where MSXY are coded as follows:    
+           M    One byte indicating the current mode of operation.    
+                A=Packet
+                B=RTTY
+                C=ASCII
+                D=AMTOR
+                E=FEC
+                F=SELFEC
+                G=LAMTOR
+                H=PACTOR
+                I=PTLISTEN
+                J=GTOR
+                K=NAVTEX
+                L=CW
+                M=TOR Standby     
+				N=GMON
+				O=PSK31
+           S    One byte indicating a sub-mode of operation. The byte
+                contains an ASCII character as follows:    
+                0=Standby
+                1=Phasing
+                2=Connected
+                3=Disconnecting
+                4=FEC
+                5=SELFEC
+                6=PTFEC    
+           X    One byte (called status byte X). This byte is bit-
+                encoded to indicate specific conditions as follows:    
+                Bit 0 =    (IDLE) set to 1 when receiving IDLE
+                          characters in a frame.
+                Bit 1 =   (ERR) set to 1 to indicate the received frame
+                          failed CRC check, or was not a valid CS
+                          response frame.
+                Bit 2 =   (Combined receive) set to 1 to indicate that
+                          the data was constructed through the use of
+                          error correction (i.e. Golay error correction
+                          for G-TOR or Memory ARQ for Pactor).
+                Bit 3 =   (RQ) set to 1 to indicate an RQ frame. If you
+                          are the ISS, it indicates that the receiving
+                          station has asked for a repeat of the last
+                          data due to received errors. When you are the
+                          IRS, it indicates that the transmitting
+                          station has sent the same data that you have
+                          already received. This means that the sending
+                          station did not properly copy your
+                          acknowledgement (CS code).
+                Bit 4 =   (Huffman) set to 1 to indicate that this
+                          frame contains data which uses Huffman
+                          compression.
+                Bit 5 =   (ISS) set to 1 to indicate that your station
+                          is currently the ISS.
+                Bit 6&7 = (Speed) these two bits indicate the current
+                          speed of an ARQ link or the PSK31 mode. The
+                          coding of the bits is:
+                          00 = 100 baud or BPSK31
+                          01 = 200 baud or QPSK31
+                          10 = 300 baud
+           Y    One byte (called status byte Y). This byte is bit-
+                encoded to indicate specific conditions as follows:    
+                Bit 0 =    reserved (set to 0).
+                Bit 1 =   (PTT) PTT is active.
+                Bit 2 =   (Changeover) changeover in progress
+                Bits 3-7 = reserved (set to 0).
+          
+      Copyright 2001 Kantronics Co., Inc. All Rights Reserved.
+      Duplication of this manual or the firmware without permission of
+      Kantronics Co., Inc is prohibited.    
+
+
