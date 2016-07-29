@@ -96,7 +96,7 @@ class serialConn:
                     checkHeader(line)
         return
         
-    def headerCheck(self, line): # Will check line for beacon header and call parser if true
+    def checkHeader(self, line): # Will check line for beacon header and call parser if true
         # Will need to add more control in readIn if beacons are more than one line
         # Any chance of having a different header and footer?  Even one character difference.
         # Need to consider chance of connecting halfway through beacon.
