@@ -32,6 +32,7 @@ class App(tk.Frame):
         self.grid()
         self.create_widgets()
         self.conn = serialConn
+             
 
     def create_widgets(self):
         # What was entered in the command box
@@ -68,19 +69,25 @@ class App(tk.Frame):
         self.quit = tk.Button(self, text="QUIT", fg="red",
                               command=self.shutdown)
         self.quit.grid(row=3,column=0)
+        
+        threading.Thread(target=self.serialRead).start()
            
     def sendCmd(self, *args):
         # Gets command from strVar when user pushes <enter>
         cmd = self.commandBox.get()
         if len(cmd) > 0:
             self.listbox.insert(tk.END, cmd)
-            # TODO: Send to self.conn
+            self.conn.cmdQ.put(cmd)
         self.listbox.yview(tk.END)
         self.commandBox.set('')
         return
         
     def serialRead(self, *args):
         # Read in a line from self.conn 
+        while True:
+            if not self.conn.readInQ.empty():
+                self.listbox.insert(tk.END, self.conn.readInQ.get())
+        return
         
     def shutdown(self, *args):
         # Copies and saves all data from the current session 
@@ -88,7 +95,7 @@ class App(tk.Frame):
         with open(self.conn.fileStr) as f:
             for line in data:
                 f.write(line.decode(encoding='latin-1',errors='replace'))
-                #f.write('\n')
+                f.write('\n')
         root.destroy()
         sys.exit(0)
 
@@ -104,10 +111,16 @@ class serialConn:
         
         self.monitor = monitor
         
-        self.lineQ = queue.Queue()
+        self.readInQ = queue.Queue()
 
+        self.cmdQ = queue.Queue()
 
         # TODO: Add GUI thing for selection, options can come from list_ports
+        
+        threading.Thread(target=self.readOne).start()
+        
+        threading.Thread(target=self.cmdCheck).start()
+        
         if not portStr:
             ports = list(serial.tools.list_ports.comports()) # List serial com ports
             
@@ -132,22 +145,14 @@ class serialConn:
         self.outFile = 'Polarcube_' + fileStr + '.txt'
         
     def readOne(self):
-        line = self.ser.readline()
-        if self.monitor:
-            self.checkHeader(line)
-        return line + '\n'
-
-    def readIn(self):
-        # Defines number of lines to read in
-        with open(self.outFile, 'w+') as f:
-            while True:
-                line = self.ser.readline()
-                print(line)
-                f.write(line.decode(encoding='latin-1',errors='replace'))
-                f.write('\n')
+        # Reads in one line, should be running all the time in a thread
+        while True:
+            line = self.ser.readline()
+            if line:
                 if self.monitor:
-                    checkHeader(line)
-        return
+                    self.checkHeader(line)
+                self.readInQ.put(line + '\n')
+        return 
         
     def checkHeader(self, line): # Will check line for beacon header and call parser if true
         # Will need to add more control in readIn if beacons are more than one line
@@ -159,7 +164,13 @@ class serialConn:
 #        self.t = str(time.time())
 #        with open('//ODIN/PolarCube/beacon_' + self.t,'w+') as beaconF: # NEED forward slashes here because Windows hates you
 #            beaconF.write(line)
-#        return 
+#        return
+
+    def cmdCheck(self):
+        while True:
+            if not self.cmdQ.empty():
+                self.cmdSend(cmdQ.get())
+        return
         
     def cmdSend(self, cmd):
         if cmd[:2] == "0x" or cmd[:2] == "\\x":
