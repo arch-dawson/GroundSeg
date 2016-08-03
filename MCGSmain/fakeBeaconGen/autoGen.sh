@@ -5,8 +5,7 @@
 # Assumes autoGen.sh is in an adjacent folder to testFiles 
 
 #======ENTER FOLDER FOR GENERATED FILES======
-path="testFiles/" # When calling from main
-# path="../testFiles/" # When calling on its own
+path=$1 # Absolute path as first command line argument
 
 headerStr=$(od -A n -t x1 header) # Gets the header from the 'header' file, converts to hex
 
