@@ -1,18 +1,32 @@
-import os, pty, serial
+import serial, sys
 import time
+import random
+import subprocess
+from subprocess import Popen, PIPE
+import re
+import shlex
 
-master, slave = pty.openpty()
+devRe = re.compile(r'/dev/pts/\d{1,3}')
 
-sName = os.ttyname(slave)
+out = Popen(shlex.split('socat -d -d pty,raw,echo=0 pty,raw,echo=0'),stdout=PIPE,stderr=PIPE)
 
-ser = serial.Serial(sName, 4800)
+# Write to first, read from second
 
-ser.timeout = 1
+ports = []
 
-print(sName)
-
-print(os.ttyname(master))
+for line in iter(out.stderr.readline, ''):
+    port = devRe.search(line.decode())
+    if port:
+        ports.append(port.group())
+    if len(ports) == 2:
+        break
+    
+print('Read from port {}'.format(ports[1]))
 
 while True:
+    print('Writing')
+    Popen(shlex.split('echo {:x} > {}'.format(random.randrange(16**30),ports[0])),stdout=PIPE)
     time.sleep(3)
-    ser.write(b'testing')
+
+out.kill()
+sys.exit(0)
