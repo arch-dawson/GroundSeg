@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # RUN WITH SUDO FOR I/O PERMISSIONS
-# CHANGE PERMISSIONS ON PORTS? 
+# CHANGE PERMISSIONS ON PORTS
+
+# Written by Dawson Beatty Summer 2016 for use by Colorado Space Grant Consortium
+# Questions? Gripes? Email me at dawson.beatty@colorado.edu or dawson.beatty@gmail.com 
 
 import serial
 import serial.tools.list_ports
@@ -13,12 +16,14 @@ import tkinter as tk
 import argparse
 import queue
 import threading
+import random
 
 # Can probably just get away with scanning lines for the 'allstarcosgc' header, low chance 1/(2**(12 * 8)) of same by chance
 
 # -monitor mode: Scan for beacon, parse if received
 # -File Specification: Specify file to be saved into
 # -port: Specify port to connect to 
+# -hasp: Adds header and footer to make the HASP people happy 
 
 # IMPORTANT
 # When running from MATLAB:
@@ -26,13 +31,15 @@ import threading
 # This will open the script in a new cmd.exe window and close it when done
 # Really should specify the port for this unless you want pseudorandom garbage instead of beacons
 
+#TODO: Add HASP mode to tack on header and footer
+
 class App(tk.Frame):
     def __init__(self, serialConn, master=None):
         super().__init__(master)
         self.grid()
         self.create_widgets()
         self.conn = serialConn
-             
+        
 
     def create_widgets(self):
         # What was entered in the command box
@@ -48,10 +55,6 @@ class App(tk.Frame):
         self.listbox.grid(row=1,column=0)
         self.listbox['height'] = 40
         self.listbox['width'] = 80
-        
-        for i in range(100):
-            self.listbox.insert(tk.END, i)
-            self.listbox.yview(tk.END)
         
         # Binding scrollbar to listbox
         self.listbox.config(yscrollcommand=self.scrollbar.set)
@@ -78,15 +81,19 @@ class App(tk.Frame):
         if len(cmd) > 0:
             self.listbox.insert(tk.END, cmd)
             self.conn.cmdQ.put(cmd)
+            self.listbox.itemconfig(self.listbox.size()-1,fg='blue')
         self.listbox.yview(tk.END)
-        self.commandBox.set('')
+        #self.listbox.yview_scroll(1, 'units')
+        self.command.set('')
         return
         
     def serialRead(self, *args):
         # Read in a line from self.conn 
+        print('\n') # This is needed for some reason. (???) 
         while True:
             if not self.conn.readInQ.empty():
                 self.listbox.insert(tk.END, self.conn.readInQ.get())
+            self.listbox.yview(tk.END)
         return
         
     def shutdown(self, *args):
@@ -101,7 +108,7 @@ class App(tk.Frame):
 
 
 class serialConn:
-    def __init__(self, monitor, fileStr, portStr, baudrate):
+    def __init__(self, monitor, fileStr, portStr, baudrate, hasp):
         """ ==== SERIAL INITIALIZATION ==== """
         self.ser = serial.Serial()
         self.ser.baudrate = baudrate  #19200
@@ -114,6 +121,11 @@ class serialConn:
         self.readInQ = queue.Queue()
 
         self.cmdQ = queue.Queue()
+        
+        if hasp:
+            self.hasp = hasp
+            self.haspPre = b'\x01\x02'
+            self.haspSuf = b'\x03\x0d\x0a'
 
         # TODO: Add GUI thing for selection, options can come from list_ports
         
@@ -172,13 +184,50 @@ class serialConn:
                 self.cmdSend(cmdQ.get())
         return
         
-    def cmdSend(self, cmd):
+    def cmdSend(self, cmd):   
         if cmd[:2] == "0x" or cmd[:2] == "\\x":
             bytes = bytearray.fromhex(cmd.replace('0x',''))
         else:
             bytes = cmd.encode()
+        if self.hasp:
+            bytes = self.haspPre + bytes + self.haspSuf
         self.ser.write(bytes)
-        return bytes     
+        return bytes
+
+class fakeConn:
+    def __init__(self, monitor, fileStr, port, baudrate, hasp):
+        self.readInQ = queue.Queue()
+
+        self.cmdQ = queue.Queue()
+        
+        self.hasp = hasp
+        
+        threading.Thread(target=self.readOne).start()
+        
+        threading.Thread(target=self.cmdCheck).start()
+        
+    def readOne(self):
+        while True:
+            self.readInQ.put('{:x}'.format(random.randrange(16**30)))
+            time.sleep(1)
+        return 
+        
+    def cmdCheck(self):
+        while True:
+            if not self.cmdQ.empty():
+                self.cmdSend(self.cmdQ.get())
+        return
+        
+    def cmdSend(self, cmd):   
+        if cmd[:2] == "0x" or cmd[:2] == "\\x":
+            bytes = bytearray.fromhex(cmd.replace('0x',''))
+        else:
+            bytes = cmd.encode()
+        if self.hasp:
+            bytes = self.haspPre + bytes + self.haspSuf
+        self.ser.write(bytes)
+        return bytes
+         
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process data coming in from TNC. Options to analyze or display.') 
@@ -186,10 +235,13 @@ if __name__ == '__main__':
     parser.add_argument('-file', action="store", dest="fileStr", type=str, default=str(time.time())) # File specification
     parser.add_argument('-port', action="store", dest='port', type=str, help='COM port of serial connection, ex: COM3') # Specify port
     parser.add_argument('-b','--baud', action="store", dest='baudrate', type=str, help='Specify baudrate', default=19200)
+    parser.add_argument('-hasp',action="store_true", default=False)
     args = parser.parse_args()
 
-    conn = serialConn(args.monitor, args.fileStr, args.port, args.baudrate)
+    # conn = serialConn(args.monitor, args.fileStr, args.port, args.baudrate)
+    conn = fakeConn(args.monitor, args.fileStr, args.port, args.baudrate, args.hasp)
     
     root = tk.Tk()
     app = App(conn, master=root)
+    app.master.title("Colorado Space Grant Consortium Serial Terminal")
     app.mainloop()
