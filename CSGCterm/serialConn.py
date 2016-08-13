@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
-# RUN WITH SUDO FOR I/O PERMISSIONS
-# CHANGE PERMISSIONS ON PORTS
 
-# Written by Dawson Beatty Summer 2016 for use by Colorado Space Grant Consortium
-# Questions? Gripes? Email me at dawson.beatty@colorado.edu or dawson.beatty@gmail.com 
 
 import serial
 import serial.tools.list_ports
@@ -123,20 +118,9 @@ class App(tk.Frame):
                 self.listbox.insert(tk.END, self.conn.readInQ.get())
             self.listbox.yview(tk.END)
         return
-        
-    def shutdown(self, *args):
-        # Copies and saves all data from the current session 
-        data = self.listbox.get(0,tk.END)
-        with open(self.conn.fileStr) as f:
-            for line in data:
-                f.write(line.decode(encoding='latin-1',errors='replace'))
-                f.write('\n')
-        root.destroy()
-        sys.exit(0)
-
 
 class serialConn:
-    def __init__(self, monitor, fileStr, portStr, baudrate, hasp):
+    def __init__(self, monitor, portStr, baudrate, hasp):
         """ ==== SERIAL INITIALIZATION ==== """
         self.ser = serial.Serial()
         self.ser.baudrate = baudrate  #19200
@@ -223,7 +207,7 @@ class serialConn:
         return bytes
 
 class fakeConn:
-    def __init__(self, monitor, fileStr, port, baudrate, hasp):
+    def __init__(self, monitor, port, baudrate, hasp):
         self.readInQ = queue.Queue()
 
         self.cmdQ = queue.Queue()
@@ -239,7 +223,7 @@ class fakeConn:
         
     def readOne(self):
         while True:
-            self.readInQ.put('{:x}'.format(random.randrange(16**30)))
+            self.readInQ.put(('{:x}'.format(random.randrange(16**30))).encode())
             time.sleep(1)
         return 
         
