@@ -15,109 +15,11 @@ import random
 
 # Can probably just get away with scanning lines for the 'allstarcosgc' header, low chance 1/(2**(12 * 8)) of same by chance
 
-# -monitor mode: Scan for beacon, parse if received
-# -File Specification: Specify file to be saved into
-# -port: Specify port to connect to 
-# -hasp: Adds header and footer to make the HASP people happy 
-
 # IMPORTANT
 # When running from MATLAB:
 # command = 'start py -3 "C:\Users\Ground Comm\Documents\MATLAB\test.py"' // Change path to correct thing
 # This will open the script in a new cmd.exe window and close it when done
 # Really should specify the port for this unless you want pseudorandom garbage instead of beacons
-
-
-class App(tk.Frame):
-    def __init__(self, serialConn, master=None):
-        super().__init__(master)
-        self.grid()
-        self.create_widgets()
-        self.conn = serialConn
-        
-        # Enabling up/down key to view command history
-        self.cmdHist = []
-        self.cmdHistCounter = -1
-        
-
-    def create_widgets(self):
-        # What was entered in the command box
-        self.command = tk.StringVar()
-        self.command.set('Enter a Command')
-
-        # Making scrollbar so display window is scrollable
-        self.scrollbar = tk.Scrollbar(self)
-        self.scrollbar.grid(row=1,column=1)
-        
-        # Make the listbox which displays all the incoming data
-        self.listbox = tk.Listbox(self,bg='gray',fg='black')
-        self.listbox.grid(row=1,column=0)
-        self.listbox['height'] = 40
-        self.listbox['width'] = 80
-        
-        # Binding scrollbar to listbox
-        self.listbox.config(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.config(command=self.listbox.yview)
-       
-        # Creating box for user to enter command 
-        self.commandBox = tk.Entry()
-        self.commandBox.grid(row=2,column=0)
-        self.commandBox['textvariable'] = self.command
-        
-        # Binding <enter> key to sending command
-        self.commandBox.bind('<Key-Return>', self.sendCmd)
-        self.commandBox.bind('<Button-1>', self.clearEntry)
-        self.commandBox.bind('<Up>', self.cmdHistUp)
-        self.commandBox.bind('<Down>', self.cmdHistDown)
-    
-        # Making quit Button 
-        self.quit = tk.Button(self, text="QUIT", fg="red",
-                              command=self.shutdown)
-        self.quit.grid(row=3,column=0)
-        
-        threading.Thread(target=self.serialRead).start()
-        
-    def clearEntry(self, *args):
-    	self.command.set('')
-    	
-    def cmdHistUp(self, *args):
-    	if len(self.cmdHist) >= abs(self.cmdHistCounter):
-    		self.command.set(self.cmdHist[self.cmdHistCounter])
-    		self.cmdHistCounter -= 1
-    	else:
-    	    self.cmdHistCounter = -len(self.cmdHist)
-    	return
-    	
-    def cmdHistDown(self, *args):
-        print(self.cmdHistCounter)
-        if self.cmdHistCounter >= 0:
-            self.cmdHistCounter = -1
-            self.command.set('')
-        else:
-            self.command.set(self.cmdHist[self.cmdHistCounter])
-            self.cmdHistCounter += 1
-           
-    def sendCmd(self, *args):
-        # Gets command from strVar when user pushes <enter>
-        cmd = self.commandBox.get()
-        if len(cmd) > 0:
-            self.listbox.insert(tk.END, cmd)
-            self.conn.cmdQ.put(cmd)
-            self.listbox.itemconfig(self.listbox.size()-1,fg='blue')
-            self.cmdHistCounter = -1
-            self.cmdHist.append(cmd)
-        self.listbox.yview(tk.END)
-        self.clearEntry()
-        #self.command.set('')
-        return
-        
-    def serialRead(self, *args):
-        # Read in a line from self.conn 
-        print('\n') # This is needed for some reason. (???) 
-        while True:
-            if not self.conn.readInQ.empty():
-                self.listbox.insert(tk.END, self.conn.readInQ.get())
-            self.listbox.yview(tk.END)
-        return
 
 class serialConn:
     def __init__(self, monitor, portStr, baudrate, hasp):
@@ -134,39 +36,21 @@ class serialConn:
 
         self.cmdQ = queue.Queue()
         
+        self.ser.port = portStr
+        
         if hasp:
             self.hasp = hasp
             self.haspPre = b'\x01\x02'
             self.haspSuf = b'\x03\x0d\x0a'
-
-        # TODO: Add GUI thing for selection, options can come from list_ports
         
         threading.Thread(target=self.readOne).start()
         
         threading.Thread(target=self.cmdCheck).start()
         
-        if not portStr:
-            ports = list(serial.tools.list_ports.comports()) # List serial com ports
-            
-            for port in ports:
-                try:
-                    self.ser.port = str(port).split()[0]
-                    self.ser.open()
-                    break # If it gets to here without throwing exception, we're fine
-                except:
-                    print('Port {} failed to open.'.format(str(port).split()[0]))
-                    self.ser.port = ''
-            if not self.ser.port:
-                self.ser.port = '/dev/ttyUSB0' # Default is what works on most linux machines
-                self.ser.open()
-        else:
-            self.ser.port = portStr
-            try:
-                self.ser.open()
-            except:
-                raise Exception("Failed to open port {}".format(portStr))
-        
-        self.outFile = 'Polarcube_' + fileStr + '.txt'
+        try:
+            self.ser.open()
+        except:
+            raise Exception("Failed to open port {}".format(portStr)) 
         
     def readOne(self):
         # Reads in one line, should be running all the time in a thread
@@ -183,6 +67,7 @@ class serialConn:
         # Any chance of having a different header and footer?  Even one character difference.
         # Need to consider chance of connecting halfway through beacon.
         # Add saving to SAMBA share, will need to timestamp in proper order.
+        #TODO Add monitoring stuff
         return
         """This will be the end-- after isolating a beacon, write to Samba share. """
 #        self.t = str(time.time())
@@ -204,7 +89,7 @@ class serialConn:
         if self.hasp:
             bytes = self.haspPre + bytes + self.haspSuf
         self.ser.write(bytes)
-        return bytes
+        return
 
 class fakeConn:
     def __init__(self, monitor, port, baudrate, hasp):
