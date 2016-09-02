@@ -12,12 +12,20 @@ import tkinter as tk
 from tkinter import filedialog
 from serialConn import *
 import threading
+import time
+import argparse
+
+#TODO: Add command line arguments for default port and baudrate
 
 class App(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, args, master=None):
         super().__init__(master)
         self.grid()
+
+        self.args = args
         self.create_widgets()
+
+        
         
     def create_widgets(self):
         # What was entered in the command box
@@ -25,7 +33,7 @@ class App(tk.Frame):
         self.command.set('Enter a Command')
         
         self.portChoice = tk.StringVar()
-        self.portChoice.set('Select Port')
+        # self.portChoice.set('Select Port')
 
         # Making scrollbar so display window is scrollable
         self.scrollbar = tk.Scrollbar(self)
@@ -37,6 +45,7 @@ class App(tk.Frame):
         self.refresh.grid(row=4,column=0,sticky=tk.W)
         
         # Open port button
+        self.portOpened = False
         self.portOpen = tk.Button(self, text="Open Port",bg='red',command=self.openPort,width=20)
         self.portOpen.grid(row=5,column=0,sticky=tk.W)
         
@@ -84,6 +93,16 @@ class App(tk.Frame):
         self.quit = tk.Button(self, text="QUIT", fg="red",width=20,
                               command=self.shutdown)
         self.quit.grid(row=5,column=2,sticky=tk.S+tk.E)
+
+        #===== Command Line Arguments =====
+        if self.args.monitor:
+            self.toggleMonitor()
+        if self.args.port:
+            self.portChoice.set(self.args.port)
+        if self.args.baudrate:
+            self.baudChoice.set(self.args.baudrate)
+        if self.args.hasp:
+            self.toggleHASP()
         
     def toggleHASP(self, *args):
     	if not self.hasp:
@@ -126,6 +145,8 @@ class App(tk.Frame):
     	self.command.set('')
         
     def openPort(self):
+        if self.portOpened: # Do nothing if port open already
+            return
         if not self.baudChoice.get():
             self.baudOption.config(bg='red')
             return
@@ -137,9 +158,12 @@ class App(tk.Frame):
             return
         else:
             self.portOption.config(bg='light grey')
-        self.conn = fakeConn(self.monitor, self.portChoice.get(), self.baudChoice.get(), self.hasp)
+        #self.conn = fakeConn(self.monitor, self.portChoice.get(), self.baudChoice.get(), self.hasp)
+        self.conn = serialConn(self.monitor, str(time.time())+'.txt', self.portChoice.get(), self.baudChoice.get(), self.hasp)
         self.portOpen.config(bg="green",text="Port Open")
         threading.Thread(target=self.serialRead,daemon=True).start()
+
+        self.portOpened = True
         return
         
     def getPorts(self):
@@ -179,19 +203,16 @@ class App(tk.Frame):
         
 
 if __name__ == '__main__':
-#    parser = argparse.ArgumentParser(description='Process data coming in from TNC. Options to analyze or display.') 
-#    parser.add_argument('-monitor', action="store_true", default=False) # Monitor for beacons
-#    parser.add_argument('-file', action="store", dest="fileStr", type=str, default=str(time.time())) # File specification
-#    parser.add_argument('-port', action="store", dest='port', type=str, help='COM port of serial connection, ex: COM3') # Specify port
-#    parser.add_argument('-b','--baud', action="store", dest='baudrate', type=str, help='Specify baudrate', default=19200)
-#    parser.add_argument('-hasp',action="store_true", default=False)
-#    args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Serial Terminal Software for use by the Colorado Space Grant Consortium')
+    parser.add_argument('-monitor', action="store_true") # Monitor for beacons
+    parser.add_argument('-file', action="store", dest="fileStr", type=str) # File specification
+    parser.add_argument('-port', action="store", dest='port', type=str, help='COM port of serial connection, ex: COM3') # Specify port
+    parser.add_argument('-b','--baud', action="store", dest='baudrate', type=str, help='Specify baudrate')
+    parser.add_argument('-hasp',action="store_true")
 
-    # conn = serialConn(args.monitor, args.fileStr, args.port, args.baudrate)
-#    conn = fakeConn(args.monitor, args.fileStr, args.port, args.baudrate, args.hasp)
+    args = parser.parse_args()
     
     root = tk.Tk()
-    #app = App(conn, master=root)
-    app = App(master=root)
+    app = App(args, master=root)
     app.master.title("Colorado Space Grant Consortium Serial Terminal")
     app.mainloop()

@@ -12,6 +12,7 @@ import argparse
 import queue
 import threading
 import random
+import math
 
 # Can probably just get away with scanning lines for the 'allstarcosgc' header, low chance 1/(2**(12 * 8)) of same by chance
 
@@ -22,14 +23,17 @@ import random
 # Really should specify the port for this unless you want pseudorandom garbage instead of beacons
 
 class serialConn:
-    def __init__(self, monitor, portStr, baudrate, hasp):
+    def __init__(self, monitor, fileStr, portStr, baudrate, hasp):
         """ ==== SERIAL INITIALIZATION ==== """
         self.ser = serial.Serial()
-        self.ser.baudrate = baudrate  #19200
+        self.ser.baudrate = baudrate  
         self.ser.timeout = 1
+
+        self.logFile = 'beaconLog.log'
         
         self.fileStr = fileStr
-        
+
+        self.readingBeacon = False # To keep track of when checkHeader is looking for beacons. Needed if beacon >1 line. 
         self.monitor = monitor
         
         self.readInQ = queue.Queue()
@@ -37,20 +41,31 @@ class serialConn:
         self.cmdQ = queue.Queue()
         
         self.ser.port = portStr
+
+        self.header = b'616c6c73746172636f736763' # Remove b if string readin
+
+        self.footer = b'' # DEFINE FOOTER HERE
+
+        # Header and footer can be arbitrary, just made header and footer different in beacon definition
+
+        self.headLength = len(self.header) # Need to use this alot, won't change
+
+        self.footLength = len(self.footer)
         
         if hasp:
             self.hasp = hasp
             self.haspPre = b'\x01\x02'
             self.haspSuf = b'\x03\x0d\x0a'
+
+        try:
+            self.ser.open()
+        except:
+            raise Exception("Failed to open port {}".format(portStr)) 
         
         threading.Thread(target=self.readOne).start()
         
         threading.Thread(target=self.cmdCheck).start()
         
-        try:
-            self.ser.open()
-        except:
-            raise Exception("Failed to open port {}".format(portStr)) 
         
     def readOne(self):
         # Reads in one line, should be running all the time in a thread
@@ -58,22 +73,90 @@ class serialConn:
             line = self.ser.readline()
             if line:
                 if self.monitor:
-                    self.checkHeader(line)
+                    self.checkBeacon(line)
                 self.readInQ.put(line + '\n')
         return 
         
-    def checkHeader(self, line): # Will check line for beacon header and call parser if true
-        # Will need to add more control in readIn if beacons are more than one line
-        # Any chance of having a different header and footer?  Even one character difference.
-        # Need to consider chance of connecting halfway through beacon.
-        # Add saving to SAMBA share, will need to timestamp in proper order.
-        #TODO Add monitoring stuff
+    def checkBeacon(self, line): # Will check line for beacon header and send to Samba when read in
+
+    # Adding old line to line if necessary
+    line = self.previous + line
+    
+    # Vectors in indices for occurences of headers and footers
+    headers = [m.start() for m in re.finditer(self.header, line)]
+
+    if self.previous: # If carrying over, don't want to count the first one
+        del(headers[0])
+
+    footers = [n.start() for n in re.finditer(self.footer, line)]
+
+    while len(footers) + len(headers) > 0:
+        try:
+            head = headers[0]
+        except:
+            head = math.inf
+        try:
+            foot = footers[0]
+        except:
+            foot = math.inf
+        if head < foot: # Header occurs before footer
+            if self.readingBeacon: # If we're in the process of reading a beacon
+                self.log('Beacon Error: Expecting Footer')
+            self.headIndex = headers[0]
+            del(headers[0])
+            self.readingBeacon = True
+        else:
+            if self.readingBeacon:
+                self.footIndex = footers[0]
+                del(footers[0])
+                self.beacon = line[self.headIndex:self.footIndex+self.footLength]
+                self.saveBeacon()
+                self.readingBeacon = False
+            else:
+                self.log('Beacon Error: Expecting Header')
+                del(footers[0])
+
+    if self.readingBeacon: # Storing for the next set 
+        self.previous = line[self.headIndex:]
+        self.headIndex = 0
+    else:
+        self.previous = ''
+
+    def log(self, message):
+        with open(self.logFile,'w+') as f:
+            f.write('[*] {}: {}\n'.format(str(time.time()),message))
         return
-        """This will be the end-- after isolating a beacon, write to Samba share. """
-#        self.t = str(time.time())
-#        with open('//ODIN/PolarCube/beacon_' + self.t,'w+') as beaconF: # NEED forward slashes here because Windows hates you
-#            beaconF.write(line)
-#        return
+
+
+    def saveBeacon(self):
+        self.t = str(time.time())
+        fName = '//ODIN/PolarCube/beacon_' + self.t # NEED forward slashes here because Windows hates you
+        with open(fName,'w+') as beaconF: 
+            beaconF.write(self.beacon)
+        self.log('Saved beacon {}'.format(fName))
+        return
+
+    def headCheck(self, line): # Checks if the start of a beacon is in given line
+        # Inputs: Line
+        # Outputs: Line after header
+        index = line.find(self.header)
+
+        if index > 0:
+            return (True, line[index+self.headLength:])
+        else:
+            return line
+
+    def footCheck(self, line): # Checks if the end of a beacon is in the given line
+        # Inputs: Line read in over TNC. INCLUDE earlier parts of beacon including header
+        # Outputs: Tuple with  line up to and including footer, and the rest of the line. Just line if no header found
+
+        index = line.find(self.footer)
+
+        if index > 0:
+            return (line[0:index+self.footLength],line[index+self.footLength:])
+        else:
+            return ('', line)
+            
 
     def cmdCheck(self):
         while True:
