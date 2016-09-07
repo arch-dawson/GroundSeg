@@ -1,12 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import binascii
 import openpyxl
 from openpyxl.cell import get_column_letter
 import re
 import math
 from bitstring import BitArray
-
-
 
 class ParseInfo:
     def __init__(self, sheet, nameInd, byteInd, typeInd, convInd, unitInd):
@@ -143,3 +141,4 @@ def main(telemetryDef, parseQueue, databaseQueue):
             convVals = generalReader.conversion(decVals)
 
             databaseQueue.put(convVals)
+            print("Adding item to dataBase queue")

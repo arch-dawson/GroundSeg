@@ -1,4 +1,4 @@
-#!/usr/bin/Python3
+#!/usr/bin/env python3
 
 import threading
 import queue
@@ -7,13 +7,14 @@ from autoCheck import autoCheck
 from parsing import parsing
 from database import database
 from uftp import uftp
+import openpyxl
 
 # ==== DEFINING STUFF ====
 # Change database soon
 telemetryDef = "BeaconDefinition.xlsx"
 dbName = 'fakeSatellite' # Change before launch.  Duh.
 tableName = 'fakeTelemetry' # Be kinda funny if you didn't change this
-path = '/home/dev/PolarCube/beacons'
+path = '/home/dev/PolarCube/beacons/'
 mostRecentFile = '/home/dev/PolarCube/mostRecent' 
 
 # ==== AUTO GEN FAKE BEACONS (TEMPORARY) ====
@@ -37,8 +38,8 @@ databaseQueue = queue.Queue()
 # ==== DEFINING ARGUMENTS TO EACH THREAD ====
 autoCheck_args = (parseQueue,mostRecentFile,path)
 parsing_args = (telemetryDef, parseQueue, databaseQueue)
-database_args = (databaseQueue, dbName, tableName, telemetryDef)
-uftp_args = (parseQueue,beaconFolder)
+#database_args = (databaseQueue, dbName, tableName, telemetryDef)
+#uftp_args = (parseQueue,beaconFolder)
 
 # ==== CREATING THE THREADS ====
 threads = [
